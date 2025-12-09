@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% block title %}Lista - Pessoas Físicas{% endblock %}
+
+{% block content %}
+<div id="listar-pf" class="section">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-users me-2"></i> Pessoas Físicas</h2>
+            <button class="btn btn-primary" onclick="exportarParaExcel('pessoa_fisica')">
+                <i class="fas fa-file-excel me-2"></i> Exportar Excel
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" id="search-pf" 
+                                   placeholder="Buscar por nome, CPF, RG, GOA, mãe, pai...">
+                            <button class="btn btn-primary" onclick="filtrarPessoasFisicas()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Foto</th>
+                                    <th>Nome</th>
+                                    <th>CPF</th>
+                                    <th>RG</th>
+                                    <th>Mãe</th>
+                                    <th>Telefone</th>
+                                    <th>GOA</th>
+                                    <th>Cadastro</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-pf">
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center mt-4" id="sem-resultados-pf" style="display:none;">
+                        <p class="text-muted">Nenhuma pessoa encontrada.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadListaPessoasFisicas();
+        showSection('listar-pf');
+    });
+</script>
+{% endblock %}

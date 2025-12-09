@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+{% block title %}Dashboard - Sistema Desktop{% endblock %}
+
+{% block content %}
+  <div id="dashboard" class="section">
+    <div class="row">
+      <div class="col-md-8">
+        <h2><i class="fas fa-tachometer-alt me-2"></i> Dashboard</h2>
+      </div>
+      <div class="col-md-4">
+        <div class="input-group">
+          <input type="text" class="form-control" id="busca-goa-dashboard" placeholder="GOA ou Prefixo (GOAINV, GOADEN...)">
+          <button class="btn btn-outline-primary" onclick="buscarGoaDashboard()">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="fas fa-filter"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="#" onclick="filtrarPorPrefixo('GOAINV')">Investigação (GOAINV)</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="filtrarPorPrefixo('GOADEN')">Denúncia (GOADEN)</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="document.getElementById('busca-goa-dashboard').value = ''; buscarGoaDashboard();">Limpar Filtro</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards do Dashboard -->
+    <div class="row mt-4">
+      <div class="col-md-3">
+        <div class="card dashboard-card bg-primary text-white">
+          <div class="card-header">
+            <i class="fas fa-user dashboard-icon"></i>
+            <h5 class="mb-0">Pessoas Físicas</h5>
+          </div>
+          <div class="card-body">
+            <div class="dashboard-number" id="total-pf">0</div>
+            <div class="dashboard-label">cadastradas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card dashboard-card bg-success text-white">
+          <div class="card-header">
+            <i class="fas fa-building dashboard-icon"></i>
+            <h5 class="mb-0">Pessoas Jurídicas</h5>
+          </div>
+          <div class="card-body">
+            <div class="dashboard-number" id="total-pj">0</div>
+            <div class="dashboard-label" id="label-pj">cadastradas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card dashboard-card bg-info text-white">
+          <div class="card-header">
+            <i class="fas fa-images dashboard-icon"></i>
+            <h5 class="mb-0">Fotos</h5>
+          </div>
+          <div class="card-body">
+            <div class="dashboard-number" id="total-fotos">0</div>
+            <div class="dashboard-label" id="label-fotos">arquivos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card dashboard-card bg-warning text-white">
+          <div class="card-header">
+            <i class="fas fa-project-diagram dashboard-icon"></i>
+            <h5 class="mb-0">Relacionamentos</h5>
+          </div>
+          <div class="card-body">
+            <div class="dashboard-number" id="total-relacionamentos">0</div>
+            <div class="dashboard-label" id="label-relacionamentos">vínculos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-users me-2"></i>Pessoas Recentemente Cadastradas
+              <span class="badge bg-primary ms-2" id="recent-count">0</span>
+            </h5>
+          </div>
+          <div class="card-body" id="recent-people-container">
+            <!-- Pessoas recentes serão carregadas aqui -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zona de Upload Automático -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card border-2" style="border-style: dashed; border-color: #007bff;">
+          <div class="card-body text-center py-5" id="drop-zone">
+            <div id="drop-content">
+              <h5 class="text-primary">📄 Auto-Cadastro por Documento</h5>
+              <p class="text-muted mb-3">
+                Arraste arquivos aqui ou clique para selecionar<br>
+                <small>PDF, DOC, TXT, JPG, PNG</small>
+              </p>
+              <div class="d-grid gap-2">
+                <button class="btn btn-primary" onclick="document.getElementById('file-upload').click()">
+                  <i class="fas fa-upload me-2"></i>Selecionar Arquivos
+                </button>
+                <div class="btn-group" role="group">
+                  <button class="btn btn-success btn-sm" onclick="gerarTemplateExcel('pessoa_fisica')" title="Baixar template para importação de Pessoas Físicas">
+                    <i class="fas fa-file-excel me-1"></i>Template PF
+                  </button>
+                  <button class="btn btn-info btn-sm" onclick="gerarTemplateExcel('pessoa_juridica')" title="Baixar template para importação de Pessoas Jurídicas">
+                    <i class="fas fa-file-excel me-1"></i>Template PJ
+                  </button>
+                </div>
+                <input type="file" id="file-upload-excel" style="display: none;" accept=".xlsx,.xls,.csv" onchange="processarExcelUpload(this)">
+                <button class="btn btn-outline-primary btn-sm" onclick="document.getElementById('file-upload-excel').click()">
+                  <i class="fas fa-table me-1"></i>Importar Excel/CSV
+                </button>
+              </div>
+              <input type="file" id="file-upload" style="display: none;" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" multiple>
+            </div>
+            <div id="processing-content" style="display: none;">
+              <h5 class="text-info">⏳ Processando...</h5>
+              <p class="text-muted">Extraindo dados automaticamente</p>
+              <div style="background: #e9ecef; height: 8px; border-radius: 4px; margin-top: 10px;">
+                <div id="progress-bar" style="background: #007bff; height: 8px; border-radius: 4px; width: 0%; transition: width 0.3s;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

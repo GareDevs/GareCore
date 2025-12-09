@@ -1,0 +1,178 @@
+{% extends 'core/base.html' %}
+{% block title %}Login - Sistema{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --dark-navy: #0f172a;
+        --navy-blue: #1e293b;
+        --dark-blue: #334155;
+        --medium-blue: #475569;
+        --accent-blue: #3b82f6;
+        --light-blue: #60a5fa;
+        --text-light: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-color: #475569;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, var(--dark-navy) 0%, var(--navy-blue) 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+    }
+
+    .login-container {
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(15px);
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+    }
+
+    .login-container::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--accent-blue), var(--light-blue), var(--accent-blue));
+        border-radius: 20px 20px 0 0;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--accent-blue), var(--light-blue));
+        border: none;
+        border-radius: 12px;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
+
+    .alert { padding: 1rem; border-radius: 12px; margin: 1rem 0; }
+    .alert-danger { background: rgba(239, 68,0.15); color: #fca5a5; border-left: 4px solid var(--danger); }
+    .alert-success { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-left: 4px solid var(--success); }
+
+    .spinner { width: 20px; height: 20px; border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="text-center mb-4">
+        <h2 class="text-white fw-bold"><i class="fas fa-shield-alt me-2"></i> Login Seguro</h2>
+        <p class="text-muted">Sistema de Gerenciamento de Pessoas</p>
+    </div>
+
+    <div id="alert-container"></div>
+
+    <form id="loginForm">
+        <div class="mb-3">
+            <label class="form-label text-light"><i class="fas fa-envelope me-1"></i> E-mail</label>
+            <input type="email" id="email" class="form-control form-control-lg" placeholder="seu@email.com" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-light"><i class="fas fa-lock me-1"></i> Senha</label>
+            <div class="position-relative">
+                <input type="password" id="senha" class="form-control form-control-lg" placeholder="••••••••" required>
+                <button type="button" class="btn btn-link text-muted position-absolute end-0 top-50 translate-middle-y" onclick="togglePassword()">
+                    <i class="fas fa-eye" id="eye-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-login" id="btnLogin">
+            <span class="spinner" id="spinner" style="display:none;"></span>
+            <span id="btnText">Entrar no Sistema</span>
+        </button>
+    </form>
+
+    <div class="text-center mt-4">
+        <p class="text-muted small">
+            Não tem conta? 
+            <a href="{% url 'registro' %}" class="text-info text-decoration-none fw-bold">Solicite acesso</a>
+        </p>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const input = document.getElementById('senha');
+    const icon = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const btnText = document.getElementById('btnText');
+    const spinner = document.getElementById('spinner');
+
+    btnText.textContent = 'Autenticando...';
+    spinner.style.display = 'inline-block';
+
+    try {
+        const response = await fetch('/api/login/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Salva o token
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+            setTimeout(() => window.location.href = '/dashboard/', 1500);
+        } else {
+            showAlert(data.detail || 'E-mail ou senha incorretos', 'danger');
+        }
+    } catch (err) {
+        showAlert('Erro de conexão. Tente novamente.', 'danger');
+    } finally {
+        btnText.textContent = 'Entrar no Sistema';
+        spinner.style.display = 'none';
+    }
+});
+
+function showAlert(msg, type) {
+    const container = document.getElementById('alert-container');
+    container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+    setTimeout(() => container.innerHTML = '', 5000);
+}
+
+// Se já estiver logado, vai direto pro dashboard
+if (localStorage.getItem('access_token')) {
+    window.location.href = '/dashboard/';
+}
+</script>
+{% endblock %}

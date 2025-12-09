@@ -1,0 +1,33 @@
+-- Tabela de usuários (compatível com Django + auth do Supabase)
+create table public.usuarios (
+  id uuid primary key default uuid_generate_v4(),
+  email text not null unique,
+  senha text not null, -- será armazenado como hash (bcrypt)
+  nome text not null,
+  role text not null default 'user' check (role in ('user', 'admin')),
+  ativo boolean default true,
+  criado_em timestamp with time zone default now(),
+  atualizado_em timestamp with time zone default now()
+);
+
+-- Índices
+create index idx_usuarios_email on public.usuarios(email);
+create index idx_usuarios_role on public.usuarios(role);
+
+-- RLS (Row Level Security) - essencial no Supabase
+alter table public.usuarios enable row level security;
+
+-- Políticas de segurança
+create policy "Usuários veem só seu próprio perfil"
+  on public.usuarios for select
+  using (auth.uid() = id or (select auth.role()) = 'service_role');
+
+create policy "Admins podem tudo"
+  on public.usuarios for all
+  using ((select auth.role()) = 'service_role' or role = 'admin')
+  with check ((select auth.role()) = 'service_role');
+
+create policy "Usuários podem atualizar só si mesmos"
+  on public.usuarios for update
+  using (auth.uid() = id)
+  with check (auth.uid() = id);

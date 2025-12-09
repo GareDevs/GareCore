@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Cadastro - Pessoa Física{% endblock %}
+
+{% block content %}
+
+<div id="cadastro-pj" class="section" style="display: none;">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-building me-2"></i>Cadastro de Pessoa Jurídica</h2>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form id="form-pessoa-juridica">
+                        <!-- Formulário será inserido aqui pelo JavaScript -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/forms.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadFormPessoaJuridica(); // função que está no forms.js
+        showSection('cadastro-pj');
+    });
+</script>
+
+{% endblock %}

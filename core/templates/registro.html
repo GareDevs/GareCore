@@ -1,0 +1,100 @@
+{% extends 'core/base.html' %}
+{% block title %}Cadastro de Usuário{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root { --accent-blue: #3b82f6; --success: #10b981; --danger: #ef4444; }
+    .register-container {
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(15px);
+        border: 2px solid #475569;
+        border-radius: 20px;
+        padding: 2.5rem;
+        max-width: 520px;
+        margin: 2rem auto;
+        box-shadow: 0 25px 80px rgba(0,0,0,0.6);
+    }
+    .btn-register {
+        background: linear-gradient(135deg, var(--accent-blue), #60a5fa);
+        border: none;
+        padding:hover { transform: translateY(-3px); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container text-light">
+    <a href="{% url 'login' %}" class="text-info mb-4 d-inline-block"><i class="fas fa-arrow-left"></i> Voltar ao Login</a>
+
+    <h2 class="text-center mb-4"><i class="fas fa-user-plus me-2"></i> Criar Conta</h2>
+    <p class="text-center text-muted mb-4">Solicite acesso ao sistema</p>
+
+    <div id="alert-container"></div>
+
+    <form id="registroForm">
+        <div class="row g-3">
+            <div class="col-12">
+                <label>Nome Completo</label>
+                <input type="text" id="nome" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <label>E-mail</label>
+                <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="col-12">
+                <label>Senha</label>
+                <input type="password" id="senha" class="form-control" minlength="6" required>
+            </div>
+            <div class="col-12">
+                <label>Setor/Departamento</label>
+                <input type="text" id="setor" class="form-control" placeholder="Ex: Investigação" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-register text-white mt-4 w-100 py-3" id="btnRegistro">
+            <span id="btnText">Solicitar Acesso</span>
+        </button>
+    </form>
+</div>
+
+<script>
+document.getElementById('registroForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const setor = document.getElementById('setor').value.trim();
+
+    const btnText = document.getElementById('btnText');
+    btnText.innerHTML = '<span class="spinner"></span> Enviando...';
+
+    try {
+        const response = await fetch('/api/registro/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, email, senha, role: 'user' })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showAlert('Solicitação enviada! Aguarde aprovação do administrador.', 'success');
+            setTimeout(() => window.location.href = '/', 3000);
+        } else {
+            const erro = Object.values(data).flat().join(' ');
+            showAlert(erro || 'Erro ao criar conta', 'danger');
+        }
+    } catch (err) {
+        showAlert('Erro de conexão', 'danger');
+    } finally {
+        btnText.textContent = 'Solicitar Acesso';
+    }
+});
+
+function showAlert(msg, type) {
+    const c = document.getElementById('alert-container');
+    c.innerHTML = `<div class="alert alert-${type} p-3 rounded">${msg}</div>`;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% block title %}Gerenciamento de Fotos{% endblock %}
+
+{% block content %}
+<div id="fotos" class="section">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-images me-2"></i> Gerenciamento de Fotos</h2>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Formulário de Upload -->
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-upload me-2"></i> Upload de Foto</h5>
+                </div>
+                <div class="card-body">
+                    <form id="form-upload-foto">
+                        <div class="mb-3">
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" id="tipo-pessoa-foto" required onchange="carregarPessoasParaFoto()">
+                                <option value="">Selecione...</option>
+                                <option value="fisica">Pessoa Física</option>
+                                <option value="juridica">Pessoa Jurídica</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Pessoa</label>
+                            <select class="form-select" id="pessoa-foto" required disabled>
+                                <option value="">Primeiro escolha o tipo</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Foto</label>
+                            <input type="file" class="form-control" id="arquivo-foto" accept="image/*" required 
+                                   onchange="previewFoto(this)">
+                        </div>
+
+                        <div class="mb-3 text-center" id="preview-container" style="display:none;">
+                            <img id="preview-image" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descrição (opcional)</label>
+                            <textarea class="form-control" id="descricao-foto" rows="3" placeholder="Ex: Foto do RG, selfie, documento..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-cloud-upload-alt me-2"></i> Fazer Upload
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galeria -->
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-images me-2"></i> Galeria de Fotos</h5>
+                    <span class="badge bg-light text-dark" id="total-fotos-galeria">0 fotos</span>
+                </div>
+                <div class="card-body">
+                    <div id="galeria-fotos" class="row g-3">
+                        <!-- Fotos carregadas aqui via JS -->
+                    </div>
+                    <div id="galeria-vazia" class="text-center text-muted py-5">
+                        <i class="fas fa-images fa-3x mb-3"></i>
+                        <p>Nenhuma foto cadastrada ainda.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarGaleriaFotos();
+        showSection('fotos');
+    });
+</script>
+{% endblock %}
