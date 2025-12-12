@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +47,28 @@ INSTALLED_APPS = [
     'corsheaders',
     'core',
 ]
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Gare Core",
+    "site_logo": "img/logo.jpg",
+    # Logo que aparece CENTRALIZADO na tela de login
+    "login_logo": "img/logo.jpg",  # opcional, se quiser diferente
+    
+    #"site_logo_classes": "img-circle",       # opcional (classe CSS)
+    "site_header": "Painel Administrativo",
+    "welcome_sign": "Bem-vindo ao sistema Administrativo do Gare Core",
+    "copyright": "Garé IP",
+    "show_sidebar": True,
+    "navigation_expanded": False,
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+    },
+    # Tema escuro padrão (muito usado)
+    "theme": "darkly",
+    # ou "cyborg", "lux", "superhero", etc.
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

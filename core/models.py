@@ -46,12 +46,12 @@ class TimeStampedModel(models.Model):
 class Pessoa(TimeStampedModel):
     TIPO_CHOICES = (('F', 'Física'), ('J', 'Jurídica'))
     tipo = models.CharField(max_length=1, choices=TIPO_CHOICES)
-    goa = models.CharField(max_length=100, unique=True, blank=True, null=True, validators=[validate_goa])
+    #goa = models.CharField(max_length=100, unique=True, blank=True, null=True, validators=[validate_goa])
 
     class Meta:
         db_table = 'pessoa'
         indexes = [
-            models.Index(fields=['goa']),
+            #models.Index(fields=['goa']),
             models.Index(fields=['tipo']),
         ]
 
@@ -258,7 +258,15 @@ class UsuarioManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('role', 'admin')
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
         return self.create_user(email, nome, senha, **extra_fields)
+
+
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
