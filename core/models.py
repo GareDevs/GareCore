@@ -46,7 +46,7 @@ class TimeStampedModel(models.Model):
 class Pessoa(TimeStampedModel):
     TIPO_CHOICES = (('F', 'Física'), ('J', 'Jurídica'))
     tipo = models.CharField(max_length=1, choices=TIPO_CHOICES)
-    #goa = models.CharField(max_length=100, unique=True, blank=True, null=True, validators=[validate_goa])
+    goa = models.CharField(max_length=100, unique=True, blank=True, validators=[validate_goa])
 
     class Meta:
         db_table = 'pessoa'
