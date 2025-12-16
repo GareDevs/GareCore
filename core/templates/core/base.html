@@ -13,6 +13,11 @@
     
     {% block extra_css %}{% endblock %}
 </head>
+
+{% block extra_js %}
+
+
+{% endblock %}
 <body>
     <div class="desktop-container">
         {% include 'core/partials/header.html' %}
@@ -32,6 +37,9 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
+    <!-- Autenticação JWT -->
+    <script src="{% static 'core/js/auth.js' %}"></script>
+
     <script src="{% static 'core/js/database.js' %}"></script>
     <script src="{% static 'core/js/main.js' %}"></script>
     <script src="{% static 'core/js/forms.js' %}"></script>
@@ -42,6 +50,5 @@
     <script src="{% static 'core/js/backup.js' %}"></script>
     <script src="{% static 'core/js/excel-templates.js' %}"></script>
 
-    {% block extra_js %}{% endblock %}
 </body>
 </html>

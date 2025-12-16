@@ -113,72 +113,41 @@
         <p class="register-subtitle">Solicite acesso ao sistema</p>
     </div>
 
-    <div id="alert-container"></div>
+    {% if form.errors %}
+        <div class="alert alert-danger p-3 rounded mb-3">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
 
-    <form id="registroForm">
+    <form method="post" action="{% url 'registro' %}">
+        {% csrf_token %}
         <div class="row g-3">
             <div class="col-12">
                 <label>Nome Completo</label>
-                <input type="text" id="nome" class="form-control" required>
+                <input type="text" name="nome" class="form-control" required value="{{ form.nome.value|default:'' }}">
             </div>
             <div class="col-12">
                 <label>E-mail</label>
-                <input type="email" id="email" class="form-control" required>
+                <input type="email" name="email" class="form-control" required value="{{ form.email.value|default:'' }}">
             </div>
             <div class="col-12">
                 <label>Senha</label>
-                <input type="password" id="senha" class="form-control" minlength="6" required>
+                <input type="password" name="senha" class="form-control" minlength="6" required>
             </div>
             <div class="col-12">
                 <label>Setor/Departamento</label>
-                <input type="text" id="setor" class="form-control" placeholder="Ex: Investigação" required>
+                <input type="text" name="setor" class="form-control" placeholder="Ex: Investigação">
             </div>
         </div>
 
-        <button type="submit" class="btn btn-register text-white mt-4 w-100 py-3" id="btnRegistro">
-            <span id="btnText">Solicitar Acesso</span>
+        <button type="submit" class="btn btn-register text-white mt-4 w-100 py-3">
+            Solicitar Acesso
         </button>
     </form>
 </div>
 
-<script>
-document.getElementById('registroForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const nome = document.getElementById('nome').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const senha = document.getElementById('senha').value;
-    const setor = document.getElementById('setor').value.trim();
-
-    const btnText = document.getElementById('btnText');
-    btnText.innerHTML = '<span class="spinner"></span> Enviando...';
-
-    try {
-        const response = await fetch('/api/registro/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nome, email, senha, role: 'user' })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            showAlert('Solicitação enviada! Aguarde aprovação do administrador.', 'success');
-            setTimeout(() => window.location.href = '/', 3000);
-        } else {
-            const erro = Object.values(data).flat().join(' ');
-            showAlert(erro || 'Erro ao criar conta', 'danger');
-        }
-    } catch (err) {
-        showAlert('Erro de conexão', 'danger');
-    } finally {
-        btnText.textContent = 'Solicitar Acesso';
-    }
-});
-
-function showAlert(msg, type) {
-    const c = document.getElementById('alert-container');
-    c.innerHTML = `<div class="alert alert-${type} p-3 rounded">${msg}</div>`;
-}
-</script>
 {% endblock %}

@@ -1,19 +1,25 @@
 # core/views.py — VERSÃO FINAL OFICIAL (API-ONLY + JWT)
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from .serializers import RegistroSerializer, LoginSerializer, UsuarioSerializer
 from .models import Usuario
 
 # ------------------------
-# PÁGINAS ESTÁTICAS (sem @login_required!)
+# PÁGINAS ESTÁTICAS PROTEGIDAS POR LOGIN
+# Nota: Proteção é feita pelo middleware JWTAuthenticationMiddleware
+# Não é necessário decorador @jwt_required nas views template
 # ------------------------
-# Seu frontend vai proteger essas rotas com JS verificando o token
+
 
 def dashboard(request):
     return render(request, 'dashboard.html')
@@ -36,9 +42,11 @@ def fotos(request):
 def arvore(request):
     return render(request, 'arvore.html')
 
-# Página inicial (login)
-def index(request):
-    return render(request, 'login.html')  # você vai criar essa página
+def pagina_login(request):
+    return render(request, 'login.html')
+
+def pagina_registro(request):
+    return render(request, 'registro.html')
 
 
 # ------------------------
@@ -61,7 +69,6 @@ class RegistroView(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LoginView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
@@ -70,14 +77,45 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
+            
             refresh = RefreshToken.for_user(user)
             return Response({
                 'user': UsuarioSerializer(user).data,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
-            })
-        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class VerifyTokenView(APIView):
+    """Verifica se um token JWT é válido"""
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        token = request.data.get('token')
+        
+        if not token:
+            return Response({
+                'detail': 'Token não fornecido'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            jwt_auth = JWTAuthentication()
+            validated_token = jwt_auth.get_validated_token(token)
+            user = jwt_auth.get_user(validated_token)
+            
+            if user and user.is_authenticated:
+                return Response({
+                    'valid': True,
+                    'user': UsuarioSerializer(user).data
+                }, status=status.HTTP_200_OK)
+        except (InvalidToken, TokenError, Exception):
+            pass
+        
+        return Response({
+            'valid': False,
+            'detail': 'Token inválido ou expirado'
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
     def post(self, request):
@@ -88,7 +126,6 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 class PerfilView(APIView):
     permission_classes = [permissions.IsAuthenticated]

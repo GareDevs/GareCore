@@ -229,6 +229,7 @@ class Relacionamento(TimeStampedModel):
 # ========================
 # 8. Foto (mantida simples)
 # ========================
+
 class Foto(TimeStampedModel):
     pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE, related_name='fotos')
     url_arquivo = models.TextField()
@@ -265,8 +266,6 @@ class UsuarioManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, nome, senha, **extra_fields)
-
-
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

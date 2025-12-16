@@ -1,9 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+
 from . import views
 
 router = DefaultRouter()
 router.register(r'usuarios', views.UsuarioViewSet)
+#router.register()
 
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
@@ -19,5 +21,6 @@ urlpatterns = [
     path('api/login/', views.LoginView.as_view(), name='api_login'),
     path('api/logout/', views.LogoutView.as_view(), name='api_logout'),
     path('api/perfil/', views.PerfilView.as_view(), name='api_perfil'),
+    path('api/verify-token/', views.VerifyTokenView.as_view(), name='verify_token'),
     path('api/', include(router.urls)),
 ]

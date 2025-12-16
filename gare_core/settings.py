@@ -79,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'core.middleware.JWTAuthenticationMiddleware',  # Valida tokens JWT
 ]
 
 ROOT_URLCONF = 'gare_core.urls'
@@ -129,6 +130,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_USER_MODEL = 'core.Usuario'
+USERNAME_FIELD = 'email'
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -169,9 +171,15 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),    # Tempo de vida do access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # Tempo de vida do refresh token
+    'ROTATE_REFRESH_TOKENS': True,                    # Gera novo refresh ao usar
+    'BLACKLIST_AFTER_ROTATION': True,                 # Invalida o antigo refresh
+    'AUTH_HEADER_TYPES': ('Bearer',),                 # Formato do header: Bearer <token>
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
 }
 
 # Internationalization
@@ -203,5 +211,6 @@ STATICFILES_DIRS = [BASE_DIR / 'core/static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'

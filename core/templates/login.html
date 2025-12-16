@@ -1,5 +1,3 @@
-
-
 {% block extra_css %}
 <style>
         :root {
@@ -400,6 +398,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+<!-- login.html -->
 <div class="login-container">
     <div class="login-header">
         <h2 class="login-title">
@@ -409,18 +408,30 @@
         <p class="login-subtitle">Sistema de Gerenciamento de Pessoas</p>
     </div>
 
-    <div id="alert-container"></div>
+    <div id="alert-container" class="mb-3"></div>
 
     <form id="loginForm">
         <div class="mb-3">
             <label class="form-label"><i class="fas fa-envelope me-1"></i> E-mail</label>
-            <input type="email" id="email" class="form-control" placeholder="seu@email.com" required>
+            <input 
+                type="email" 
+                id="email" 
+                class="form-control" 
+                placeholder="seu@email.com" 
+                required
+            >
         </div>
 
         <div class="mb-4">
             <label class="form-label"><i class="fas fa-lock me-1"></i> Senha</label>
             <div class="position-relative">
-                <input type="password" id="senha" class="form-control" placeholder="••••••••" required>
+                <input 
+                    type="password" 
+                    id="senha" 
+                    class="form-control" 
+                    placeholder="••••••••" 
+                    required
+                >
                 <button type="button" class="password-toggle" onclick="togglePassword()">
                     <i class="fas fa-eye" id="eye-icon"></i>
                 </button>
@@ -435,13 +446,14 @@
 
     <div class="text-center mt-4">
         <p class="text-muted small">
-            Não tem conta? 
+            Não tem conta?
             <a href="{% url 'registro' %}" class="text-info text-decoration-none fw-bold">Solicite acesso</a>
         </p>
     </div>
 </div>
 
 <script>
+// Função para alternar a visibilidade da senha
 function togglePassword() {
     const input = document.getElementById('senha');
     const icon = document.getElementById('eye-icon');
@@ -454,54 +466,124 @@ function togglePassword() {
     }
 }
 
+// Função para exibir mensagens de alerta
+function showAlert(message, type = 'danger') {
+    const container = document.getElementById('alert-container');
+    container.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+}
+
+// Função para verificar se o token é válido
+async function verifyToken() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return false;
+    
+    try {
+        const response = await fetch('/api/verify-token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token })
+        });
+        
+        return response.ok;
+    } catch (error) {
+        console.error('Erro ao verificar token:', error);
+        return false;
+    }
+}
+
+// Manipulador do formulário de login
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
+    
     const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
     const btnText = document.getElementById('btnText');
     const spinner = document.getElementById('spinner');
-
+    const loginButton = document.getElementById('btnLogin');
+    
+    // Mostra o spinner e desabilita o botão
     btnText.textContent = 'Autenticando...';
     spinner.style.display = 'inline-block';
+    loginButton.disabled = true;
 
     try {
         const response = await fetch('/api/login/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, senha })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                email: email,
+                senha: senha 
+            })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            // Salva o token
+            // Salva os tokens
             localStorage.setItem('access_token', data.access);
-            localStorage.setItem('refresh_token', data.refresh);
-            localStorage.setItem('user', JSON.stringify(data.user));
-
+            if (data.refresh) {
+                localStorage.setItem('refresh_token', data.refresh);
+            }
+            
+            // Também salva em cookie para o servidor validar
+            // (este cookie será enviado automaticamente nas requisições)
+            document.cookie = `access_token=${data.access}; path=/; max-age=${60*60}; SameSite=Lax`;
+            
+            // Redireciona para o dashboard
             showAlert('Login realizado com sucesso! Redirecionando...', 'success');
-            setTimeout(() => window.location.href = '/dashboard/', 1500);
+            setTimeout(() => {
+                window.location.href = '/dashboard/';
+            }, 1500);
         } else {
-            showAlert(data.detail || 'E-mail ou senha incorretos', 'danger');
+            // Mostra mensagem de erro
+            const errorMsg = data.detail || 'E-mail ou senha inválidos';
+            showAlert(errorMsg, 'danger');
         }
-    } catch (err) {
-        showAlert('Erro de conexão. Tente novamente.', 'danger');
+    } catch (error) {
+        console.error('Erro ao fazer login:', error);
+        showAlert('Erro de conexão. Tente novamente mais tarde.', 'danger');
     } finally {
+        // Restaura o botão
         btnText.textContent = 'Entrar no Sistema';
         spinner.style.display = 'none';
+        loginButton.disabled = false;
     }
 });
 
-function showAlert(msg, type) {
-    const container = document.getElementById('alert-container');
-    container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
-    setTimeout(() => container.innerHTML = '', 5000);
-}
+// Verifica o token quando a página carregar
+document.addEventListener('DOMContentLoaded', async function() {
+    const currentPath = window.location.pathname;
+    
+    // Verifica se o usuário já está autenticado
+    const isTokenValid = await verifyToken();
+    
+    // Se o token for válido e o usuário estiver na página de login, redireciona para o dashboard
+    if (isTokenValid && (currentPath === '/login/' || currentPath === '/login')) {
+        window.location.href = '/dashboard/';
+    }
+    
+    // Se o token for inválido, remove do localStorage
+    if (!isTokenValid) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+    }
+});
 
-// Se já estiver logado, vai direto pro dashboard
-if (localStorage.getItem('access_token')) {
-    window.location.href = '/dashboard/';
-}
+// Adiciona funcionalidade para o botão de mostrar/esconder senha
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleButton = document.querySelector('.password-toggle');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', togglePassword);
+    }
+});
 </script>
 {% endblock %}

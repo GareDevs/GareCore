@@ -1,0 +1,1082 @@
+<![CDATA[YII-BLOCK-HEAD]]><![CDATA[YII-BLOCK-BODY-BEGIN]]><meta charset="UTF-8">
+<table style="border-collapse: collapse; border: solid 1px #668FAF;">
+    <tr bgcolor="#668FAF" style="background: #668FAF;">
+        <td colspan="4">
+            <h1>Mapa de Relacionamentos</h1>
+        </td>
+    </tr>
+</table>
+<br>
+<table style="border-collapse: collapse; border: solid 1px #668FAF;">
+    <tr bgcolor="#668FAF" style="background: #668FAF;">
+        <td colspan="5" align="center">NOME EMPRESARIAL</td>
+        <td colspan="4" align="center">NOME FANTASIA</td>
+        <td colspan="2" align="center">CNPJ</td>
+        <td colspan="2" align="center">PORTE DA EMPRESA</td>
+        <td colspan="2" align="center">ABERTURA</td>
+        <td colspan="2" align="center">FECHAMENTO</td>
+        <td align="center">SIT. CAD.</td>
+        <td colspan="2" align="center">DATA SIT. CADASTRAL</td>
+        <td align="center">CNAE</td>
+        <td colspan="4" align="center">E-MAIL</td>
+        <td colspan="6" align="center">LOGRADOURO</td>
+        <td colspan="2" align="center">CIDADE</td>
+        <td colspan="2" align="center">CEP</td>
+        <td colspan="4" align="center">TELEFONES</td>
+        <td colspan="2" align="center">CAPITAL SOCIAL</td>
+        <td colspan="3" align="center">SIT. SIMPLES NACIONAL</td>
+        <td colspan="2" align="center">DATA OPÇÃO SIMPLES</td>
+        <td colspan="2" align="center">DT. EXCLUSÃO SIMPLES</td>
+        <td align="center">MEI</td>
+        <td colspan="4" align="center">SOCIO I</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+
+        <td colspan="4" align="center">SOCIO II</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+
+        <td colspan="4" align="center">SOCIO III</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+
+        <td colspan="4" align="center">SOCIO IV</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+
+        <td colspan="4" align="center">SOCIO V</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+
+        <td colspan="4" align="center">SOCIO VI</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+
+        <td colspan="4" align="center">SOCIO VII</td>
+        <td colspan="2" align="center">CPF/CNPJ</td>
+        <td colspan="2" align="center">DATA DE NASCIMENTO</td>
+        <td align="center">IDADE</td>
+        <td colspan="2" align="center">SUSPEITA DE ÓBITO</td>
+        <td colspan="4" align="center">NOME DA MÃE</td>
+        <td colspan="2" align="center">QUALIFICAÇÃO</td>
+    </tr>
+            <tr>
+            <td colspan="5">MAGAZINE DOS PLUG E VARIEDADES LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">51.527.743/0001-55</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">24/07/2023</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">24/07/2023</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 40044866, (11) 25362565, (11) 22564958</td>
+            <td colspan="2" align="center">R$ 500.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">24/07/2023</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">DEBORA ROSA DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">DM DISTRIBUIDORA DE UTILIDADES DOMESTICAS LTDA</td>
+            <td colspan="4" align="center">DM DISTRIBUIDORA</td>
+            <td colspan="2" align="center">44.537.411/0001-96</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">09/12/2021</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">09/12/2021</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DR PAULO QUEIROZ, 882 - JARDIM NOVE DE JULHO</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.951-090</td>
+            <td colspan="4" align="center">(11) 40044866, (11) 22853378, (11) 94004486</td>
+            <td colspan="2" align="center">R$ 890.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">09/12/2021</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">DEBORA ROSA DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">M S BITAR UTILIDADES LTDA</td>
+            <td colspan="4" align="center">M S BITAR</td>
+            <td colspan="2" align="center">49.943.471/0001-22</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">15/03/2023</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">15/03/2023</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOUTOR PAULO QUEIROZ, 882 - JARDIM NOVE DE JULHO</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.951-090</td>
+            <td colspan="4" align="center">(11) 40044866, () , () </td>
+            <td colspan="2" align="center">R$ 80.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">15/03/2023</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">DEBORA ROSA DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">MIX AGILITY LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">51.515.524/0001-56</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 22252563, (11) 22563325, (11) 25695863</td>
+            <td colspan="2" align="center">R$ 500.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">DEBORA ROSA DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">FDM HOLDING E ADMINISTRADORA LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">54.095.888/0001-12</td>
+            <td colspan="2" align="center">DEMAIS</td>
+            <td colspan="2" align="center">27/02/2024</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">27/02/2024</td>
+            <td align="center">8211300 - Serviços combinados de escritório e apoio administrativo</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 22554433, (11) 22556633, (22) 55884752</td>
+            <td colspan="2" align="center">R$ 260.000,00</td>
+            <td colspan="3" align="center">NÃO DEFINIDO</td>
+            <td colspan="2" align="center">---</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">MATEUS DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center">DEBORA ROSA DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">F RODRIGUES BITAR LTDA</td>
+            <td colspan="4" align="center">F RODRIGUES</td>
+            <td colspan="2" align="center">10.189.093/0001-06</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">04/07/2008</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">04/07/2008</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 22554466, (11) 22334466, (11) 44225566</td>
+            <td colspan="2" align="center">R$ 40.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">01/01/2020</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">DEBORA ROSA DA SILVA BITAR</td>
+                <td colspan="2" align="center">..-</td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">ELLU FLEX COMERCIO LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">22.091.172/0001-50</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">20/03/2015</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">20/03/2015</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA ARTUR MONTENEGRO, 7 - JARDIM IVA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.921-050</td>
+            <td colspan="4" align="center">(11) 94004486, (11) 40044866, (11) 40044866</td>
+            <td colspan="2" align="center">R$ 200.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">20/03/2015</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">ELLEN KARINE BEZERRA CARDOSO</td>
+                <td colspan="2" align="center">514.560.328-28</td>
+                <td colspan="2" align="center">2000-12-14</td>
+                <td align="center">24</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">DEMAFA DISTRIBUICAO DE UTILIDADES DOMESTICAS LTDA</td>
+            <td colspan="4" align="center">DEMAFA DISTRIBUIDORA</td>
+            <td colspan="2" align="center">29.832.962/0001-99</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">02/03/2018</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">02/03/2018</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DR PAULO QUEIROZ, 882 - JARDIM NOVE DE JULHO</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.951-090</td>
+            <td colspan="4" align="center">(11) 22853378, (11) 40044866, (11) 94004486</td>
+            <td colspan="2" align="center">R$ 890.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">02/03/2018</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">FABIO RODRIGUES BITAR</td>
+                <td colspan="2" align="center">251.331.858-71</td>
+                <td colspan="2" align="center">1975-11-06</td>
+                <td align="center">50</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">CELINA RODRIGUES BITAR</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">PLUG PLUS VARIEDADES LTDA</td>
+            <td colspan="4" align="center">PLUG PLUS</td>
+            <td colspan="2" align="center">49.943.758/0001-52</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">15/03/2023</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">15/03/2023</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOUTOR PAULO QUEIROZ, 882 - JARDIM NOVE DE JULHO</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.951-090</td>
+            <td colspan="4" align="center">(11) 40044866, () , () </td>
+            <td colspan="2" align="center">R$ 100.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">15/03/2023</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">FABIO RODRIGUES BITAR</td>
+                <td colspan="2" align="center">251.331.858-71</td>
+                <td colspan="2" align="center">1975-11-06</td>
+                <td align="center">50</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">CELINA RODRIGUES BITAR</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">PLUG WORLD LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">51.515.700/0001-50</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 22525662, (11) 22556632, (11) 22565896</td>
+            <td colspan="2" align="center">R$ 500.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">FABIO RODRIGUES BITAR</td>
+                <td colspan="2" align="center">251.331.858-71</td>
+                <td colspan="2" align="center">1975-11-06</td>
+                <td align="center">50</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">CELINA RODRIGUES BITAR</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">MIX INNOVANTES LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">51.506.317/0001-35</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 22555562, (11) 26569586, (11) 25695865</td>
+            <td colspan="2" align="center">R$ 500.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">FABIO RODRIGUES BITAR</td>
+                <td colspan="2" align="center">251.331.858-71</td>
+                <td colspan="2" align="center">1975-11-06</td>
+                <td align="center">50</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">CELINA RODRIGUES BITAR</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">PLUG SALES LTDA</td>
+            <td colspan="4" align="center"></td>
+            <td colspan="2" align="center">51.506.409/0001-15</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center">18/10/2024</td>
+            <td align="center">BAIXADA</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA DOS BANQUEIROS, 95 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-050</td>
+            <td colspan="4" align="center">(11) 40044866, (11) 22524251, (11) 22365236</td>
+            <td colspan="2" align="center">R$ 500.000,00</td>
+            <td colspan="3" align="center">NÃO DEFINIDO</td>
+            <td colspan="2" align="center">21/07/2023</td>
+            <td colspan="2" align="center">18/10/2024</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">FABIO RODRIGUES BITAR</td>
+                <td colspan="2" align="center">251.331.858-71</td>
+                <td colspan="2" align="center">1975-11-06</td>
+                <td align="center">50</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">CELINA RODRIGUES BITAR</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">DAYBER COMERCIO DE MATERIAIS ELETRICOS LTDA</td>
+            <td colspan="4" align="center">ELLU UTILIDADES</td>
+            <td colspan="2" align="center">10.277.442/0001-33</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">15/08/2008</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">15/08/2008</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">SMLBAPTISTA@HOTMAIL.COM</td>
+            <td colspan="6" align="center">RUA ARTUR MONTENEGRO, 7 - JARDIM IVA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.921-050</td>
+            <td colspan="4" align="center">(11) 40044866, (11) 22853378, (11) 22556633</td>
+            <td colspan="2" align="center">R$ 100.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">15/08/2008</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">DAYSE BEZERRA DANTAS</td>
+                <td colspan="2" align="center">289.450.868-97</td>
+                <td colspan="2" align="center">1980-01-18</td>
+                <td align="center">45</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">MARIA AURISTE BEZERRA DANTAS</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center">EBERTON DIAS CARDOSO</td>
+                <td colspan="2" align="center">222.991.088-40</td>
+                <td colspan="2" align="center">1981-11-19</td>
+                <td align="center">44</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">EBE APARECIDA DIAS CARDOSO</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+            <tr>
+            <td colspan="5">STUDIO COMERCIO MATERIAIS ELETRICOS LTDA</td>
+            <td colspan="4" align="center">STUDIO FLEX</td>
+            <td colspan="2" align="center">14.057.870/0001-01</td>
+            <td colspan="2" align="center">MICRO EMPRESA</td>
+            <td colspan="2" align="center">25/07/2011</td>
+            <td colspan="2" align="center"></td>
+            <td align="center">ATIVA</td>
+            <td colspan="2" align="center">25/07/2011</td>
+            <td align="center">4759899 - Comércio varejista de outros artigos de uso doméstico não especificados anteriormente</td>
+            <td colspan="4" align="center">CONTABIL@SBAPTISTA.COM.BR</td>
+            <td colspan="6" align="center">RUA GENERAL PORFIRIO DA PAZ, 317 - VILA BANCARIA</td>
+            <td colspan="2" align="center">SAO PAULO/SP</td>
+            <td colspan="2" align="center">03.918-000</td>
+            <td colspan="4" align="center">(11) 22857755, (11) 22554477, (11) 22853378</td>
+            <td colspan="2" align="center">R$ 250.000,00</td>
+            <td colspan="3" align="center">OPTANTE PELO SIMPLES</td>
+            <td colspan="2" align="center">25/07/2011</td>
+            <td colspan="2" align="center">---</td>
+            <td align="center">NÃO</td>
+
+                            <td colspan="4" align="center">EBERTON DIAS CARDOSO</td>
+                <td colspan="2" align="center">222.991.088-40</td>
+                <td colspan="2" align="center">1981-11-19</td>
+                <td align="center">44</td>
+                <td colspan="2" align="center">NÃO</td>
+                <td colspan="4" align="center">EBE APARECIDA DIAS CARDOSO</td>
+                <td colspan="2" align="center">Sócio-Administrador</td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                            <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td align="center"></td>
+                <td colspan="2" align="center"></td>
+                <td colspan="4" align="center"></td>
+                <td colspan="2" align="center"></td>
+                    </tr>
+    </table>
+
