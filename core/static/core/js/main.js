@@ -11,8 +11,14 @@ let editingRecord = null;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Aplicação Desktop iniciada');
     
-    // Carregar dashboard inicial
-    loadDashboard();
+    // Carregar qualquer seção que já esteja visível (para acesso direto via URL)
+    loadVisibleSections();
+    
+    // Carregar dashboard inicial (se não estiver em outra página)
+    const currentVisibleSection = document.querySelector('.section:not([style*="display: none"])');
+    if (!currentVisibleSection || currentVisibleSection.id === 'dashboard') {
+        loadDashboard();
+    }
     
     // Configurar eventos
     setupEventListeners();
@@ -23,6 +29,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mostrar seção inicial
     showSection('dashboard');
 });
+
+// Carregar qualquer seção que esteja visível (para URLs diretas)
+function loadVisibleSections() {
+    console.log('🔄 Verificando seções visíveis...');
+    document.querySelectorAll('.section[data-load-function]').forEach(section => {
+        // Verifica se a seção está visível (não tem display none inline ou do CSS)
+        const isVisible = section.offsetParent !== null;
+        if (isVisible) {
+            const funcName = section.getAttribute('data-load-function');
+            const sectionId = section.id;
+            console.log(`📍 Seção visível encontrada: ${sectionId}, chamando: ${funcName}`);
+            
+            if (typeof window[funcName] === 'function') {
+                try {
+                    window[funcName]();
+                    console.log(`✅ ${funcName} chamada com sucesso`);
+                } catch (error) {
+                    console.error(`❌ Erro ao chamar ${funcName}:`, error);
+                }
+            } else {
+                console.error(`❌ Função ${funcName} não encontrada`);
+            }
+        }
+    });
+}
 
 // Configurar event listeners
 function setupEventListeners() {
@@ -138,26 +169,6 @@ function setupDesktopControls() {
     });
 }
 
-// Mostrar seção específica
-function showSection(sectionName) {
-    // Esconder todas as seções
-    document.querySelectorAll('.section').forEach(section => {
-        section.style.display = 'none';
-    });
-
-    // Mostrar seção selecionada
-    const targetSection = document.getElementById(sectionName);
-    if (targetSection) {
-        targetSection.style.display = 'block';
-        currentSection = sectionName;
-
-        // Atualizar navegação ativa
-        updateActiveNavigation(sectionName);
-
-        // Carregar dados específicos da seção
-        loadSectionData(sectionName);
-    }
-}
 
 // Atualizar navegação ativa
 function updateActiveNavigation(sectionName) {
@@ -185,6 +196,27 @@ function updateActiveNavigation(sectionName) {
 // Carregar dados específicos da seção
 function loadSectionData(sectionName) {
     console.log(`🔄 loadSectionData chamada para: ${sectionName}`);
+    
+    // Primeiro tenta usar o atributo data-load-function
+    const section = document.getElementById(sectionName);
+    if (section && section.hasAttribute('data-load-function')) {
+        const funcName = section.getAttribute('data-load-function');
+        console.log(`📍 Chamando função: ${funcName}`);
+        
+        if (typeof window[funcName] === 'function') {
+            try {
+                window[funcName]();
+                console.log(`✅ ${funcName} chamada com sucesso`);
+                return;
+            } catch (error) {
+                console.error(`❌ Erro ao chamar ${funcName}:`, error);
+            }
+        } else {
+            console.error(`❌ Função ${funcName} não encontrada`);
+        }
+    }
+    
+    // Fallback para switch anterior (compatibilidade)
     switch(sectionName) {
         case 'dashboard':
             console.log('📊 Carregando dashboard...');
@@ -1538,17 +1570,7 @@ function forcarFechamentoModal() {
     }
 }
 
-// Funções que serão implementadas nos próximos arquivos
-function setupFormListeners() { /* Implementado em forms.js */ }
-function setupPhotoListeners() { /* Implementado em fotos.js */ }
-function setupRelationshipListeners() { /* Implementado em arvore.js */ }
-function loadFormPessoaFisica() { /* Implementado em forms.js */ }
-function loadFormPessoaJuridica() { /* Implementado em forms.js */ }
-function loadListaPessoasFisicas() { /* Implementado em forms.js */ }
-function loadListaPessoasJuridicas() { /* Implementado em forms.js */ }
-function searchPessoasFisicas(term) { /* Implementado em forms.js */ }
-function searchPessoasJuridicas(term) { /* Implementado em forms.js */ }
-function loadGerenciadorFotos() { /* Implementado em fotos.js */ }
+
 function loadArvoreRelacionamentos() { 
     // Função implementada em arvore-interativa.js
     if (typeof inicializarArvoreInterativa === 'function') {

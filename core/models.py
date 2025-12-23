@@ -276,7 +276,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         choices=[('user', 'Usuário'), ('admin', 'Administrador')],
         default='user'
     )
-    ativo = models.BooleanField(default=True)
+    ativo = models.BooleanField(default=False)
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 

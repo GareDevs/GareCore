@@ -3,7 +3,7 @@
 {% block title %}Cadastro - Pessoa Jurídica{% endblock %}
 
 {% block content %}
-<div id="cadastro-pf" class="section">
+<div id="cadastro-pf" class="section" data-load-function="loadFormPessoaFisica">
     <div class="row">
         <div class="col-12">
             <h2><i class="fas fa-user-plus me-2"></i> Cadastro de Pessoa Física</h2>
@@ -26,12 +26,20 @@
 {% endblock %}
 
 {% block extra_js %}
-
-<script src="{% static 'core/js/forms.js' %}"></script>
 <script>
-     document.addEventListener('DOMContentLoaded', () => {
-        loadFormPessoaFisica();  // função que está no forms.js
-        showSection('cadastro-pf');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Carregar formulário se ainda não foi carregado
+        if (!document.getElementById('form-container-pf')?.children.length) {
+            loadFormPessoaFisica();
+        }
+        
+        const form = document.getElementById('form-pessoa-fisica');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                salvarPessoaFisica();
+            });
+        }
     });
 </script>
 {% endblock %}

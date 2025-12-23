@@ -2,7 +2,7 @@
 {% block title %}Árvore de Relacionamentos{% endblock %}
 
 {% block content %}
-<div id="arvore" class="section" style="display: none;">
+<div id="arvore" class="section" data-load-function="loadArvoreRelacionamentos">
     <div class="row">
         <div class="col-12">
             <h2><i class="fas fa-project-diagram me-2"></i>Árvore de Relacionamentos</h2>
@@ -278,8 +278,10 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        renderizarArvoreInterativa();
-        showSection('arvore');
+        // Carregar árvore se ainda não foi carregada
+        if (!document.getElementById('arvore-container')?.children.length) {
+            loadArvoreRelacionamentos();
+        }
     });
 </script>
 {% endblock %}

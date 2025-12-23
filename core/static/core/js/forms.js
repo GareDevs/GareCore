@@ -386,7 +386,7 @@ function gerarCNPJParaFormulario(campoId) {
 
 // Carregar formulário de pessoa física
 function loadFormPessoaFisica() {
-    const formContainer = document.getElementById('form-pessoa-fisica');
+    const formContainer = document.getElementById('form-container-pf');
     if (!formContainer) return;
 
     formContainer.innerHTML = `
@@ -1176,7 +1176,7 @@ function loadFormPessoaFisica() {
 
 // Carregar formulário de pessoa jurídica
 function loadFormPessoaJuridica() {
-    const formContainer = document.getElementById('form-pessoa-juridica');
+    const formContainer = document.getElementById('form-container-pj');
     if (!formContainer) return;
 
     formContainer.innerHTML = `

@@ -2,7 +2,7 @@
 {% block title %}Gerenciamento de Fotos{% endblock %}
 
 {% block content %}
-<div id="fotos" class="section">
+<div id="fotos" class="section" data-load-function="loadGerenciadorFotos">
     <div class="row">
         <div class="col-12">
             <h2><i class="fas fa-images me-2"></i> Gerenciamento de Fotos</h2>
@@ -82,8 +82,10 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        carregarGaleriaFotos();
-        showSection('fotos');
+        // Carregar gerenciador de fotos se ainda não foi carregado
+        if (!document.getElementById('galeria-fotos')?.children.length) {
+            loadGerenciadorFotos();
+        }
     });
 </script>
 {% endblock %}

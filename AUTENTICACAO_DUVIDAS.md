@@ -973,6 +973,146 @@ Cada um passa para o próximo via `self.get_response()`.
 
 ---
 
+### P: Por que usar Header Authorization além do cookie?
+
+**R:** Porque requisições AJAX (fetch) NÃO enviam cookies automaticamente com certas configurações. O header `Authorization` é o método padrão para APIs.
+
+**Comparação:**
+
+| Aspecto | Cookie | Header Authorization |
+|--------|--------|----------------------|
+| **Enviado automaticamente?** | ✅ SIM (navegação) | ❌ NÃO (precisa JS) |
+| **Requisições AJAX** | ⚠️ Depende CORS | ✅ Sempre funciona |
+| **Segurança XSS** | ✅ HttpOnly flag | ❌ Acessível por JS |
+| **Padrão APIs** | ❌ Não é padrão | ✅ SIM (RFC 6750) |
+| **Cross-domain** | ⚠️ Requer config | ✅ Funciona melhor |
+
+**Cenário 1: Apenas Cookie (❌ FALHA)**
+
+```
+Frontend: https://meuapp.com
+API: https://api.meuapp.com
+
+fetch('https://api.meuapp.com/dados/')
+├─ Domínios diferentes (CORS)
+├─ Browser bloqueia cookie
+├─ Middleware recebe: Cookie? NÃO
+└─ ❌ HTTP 401 Unauthorized
+
+Resultado: ERRO!
+```
+
+**Cenário 2: Com Header Authorization (✅ FUNCIONA)**
+
+```
+Frontend: https://meuapp.com
+API: https://api.meuapp.com
+
+fetch('https://api.meuapp.com/dados/', {
+    headers: { 'Authorization': 'Bearer token...' }
+})
+├─ Headers NÃO são bloqueados por CORS
+├─ Middleware recebe: Header Authorization? SIM!
+└─ ✅ Autentica com sucesso!
+
+Resultado: HTTP 200 com dados
+```
+
+**Por que APIs modernas usam Authorization:**
+
+```
+✅ Google Cloud API
+   Authorization: Bearer token
+
+✅ GitHub API
+   Authorization: token ghp_1234567890
+
+✅ Stripe API
+   Authorization: Bearer sk_live_...
+
+✅ AWS API
+   Authorization: AWS4-HMAC-SHA256 ...
+
+❌ Nenhuma usa cookies para AJAX
+```
+
+**Solução: Usar AMBOS**
+
+```
+┌──────────────────────────────────┐
+│ Navegação Normal (GET)           │
+├─ Cookie enviado automaticamente  │
+├─ Middleware valida com cookie    │
+└─ ✅ Página carrega               │
+
+┌──────────────────────────────────┐
+│ Requisição AJAX (fetch)          │
+├─ auth.js adiciona header         │
+├─ Middleware valida com header    │
+└─ ✅ API retorna dados            │
+```
+
+Mantenha ambos para máxima compatibilidade!
+
+---
+
+### P: Qual é a ordem de precedência do middleware: header ou cookie?
+
+**R:** Header tem prioridade:
+
+```python
+def __call__(self, request):
+    is_authenticated = False
+    
+    # 1️⃣ TENTA HEADER PRIMEIRO (maior prioridade)
+    try:
+        auth_header = request.META.get('HTTP_AUTHORIZATION', '')
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            validated_token = self.jwt_authentication.get_validated_token(token)
+            user = self.jwt_authentication.get_user(validated_token)
+            if user and user.is_authenticated:
+                request.user = user
+                is_authenticated = True
+    except:
+        pass
+    
+    # 2️⃣ SE HEADER FALHOU, TENTA COOKIE
+    if not is_authenticated:
+        try:
+            token = request.COOKIES.get('access_token')
+            if token:
+                validated_token = self.jwt_authentication.get_validated_token(token)
+                user = self.jwt_authentication.get_user(validated_token)
+                if user and user.is_authenticated:
+                    request.user = user
+                    is_authenticated = True
+        except:
+            pass
+```
+
+**Prioridade:**
+1. Header Authorization (AJAX com auth.js) ← Testa primeiro
+2. Cookie access_token (Navegação normal) ← Fallback
+
+**Exemplo:**
+
+```
+Requisição com AMBOS:
+Header: Authorization: Bearer token123
+Cookie: access_token=token456
+
+Middleware:
+├─ Testa header primeiro
+├─ ✅ token123 é válido
+├─ Usa token123 (ignora cookie)
+└─ request.user = usuário
+
+Resultado: Usa o header, cookie ignorado
+```
+
+---
+
 **Última atualização:** Dezembro 2025
 
 Esta documentação complementa os outros manuais de autenticação. Consulte conforme necessário!

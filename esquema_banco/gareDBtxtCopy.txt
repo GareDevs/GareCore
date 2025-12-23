@@ -1,0 +1,253 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.auth_group (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  name character varying NOT NULL UNIQUE,
+  CONSTRAINT auth_group_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.auth_group_permissions (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  group_id integer NOT NULL,
+  permission_id integer NOT NULL,
+  CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id),
+  CONSTRAINT auth_group_permissions_group_id_b120cbf9_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES public.auth_group(id),
+  CONSTRAINT auth_group_permissio_permission_id_84c5c92e_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES public.auth_permission(id)
+);
+CREATE TABLE public.auth_permission (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  name character varying NOT NULL,
+  content_type_id integer NOT NULL,
+  codename character varying NOT NULL,
+  CONSTRAINT auth_permission_pkey PRIMARY KEY (id),
+  CONSTRAINT auth_permission_content_type_id_2f476e4b_fk_django_co FOREIGN KEY (content_type_id) REFERENCES public.django_content_type(id)
+);
+CREATE TABLE public.authtoken_token (
+  key character varying NOT NULL,
+  created timestamp with time zone NOT NULL,
+  user_id uuid NOT NULL UNIQUE,
+  CONSTRAINT authtoken_token_pkey PRIMARY KEY (key),
+  CONSTRAINT authtoken_token_user_id_35299eff_fk_usuarios_id FOREIGN KEY (user_id) REFERENCES public.usuarios(id)
+);
+CREATE TABLE public.contato_empresa (
+  id bigint NOT NULL DEFAULT nextval('contato_empresa_id_seq'::regclass),
+  empresa_id bigint NOT NULL,
+  tipo character varying NOT NULL CHECK (tipo::text = ANY (ARRAY['email'::character varying, 'telefone'::character varying, 'celular'::character varying, 'whatsapp'::character varying]::text[])),
+  valor character varying NOT NULL,
+  principal boolean DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT contato_empresa_pkey PRIMARY KEY (id),
+  CONSTRAINT contato_empresa_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.django_admin_log (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  action_time timestamp with time zone NOT NULL,
+  object_id text,
+  object_repr character varying NOT NULL,
+  action_flag smallint NOT NULL CHECK (action_flag >= 0),
+  change_message text NOT NULL,
+  content_type_id integer,
+  user_id uuid NOT NULL,
+  CONSTRAINT django_admin_log_pkey PRIMARY KEY (id),
+  CONSTRAINT django_admin_log_content_type_id_c4bce8eb_fk_django_co FOREIGN KEY (content_type_id) REFERENCES public.django_content_type(id),
+  CONSTRAINT django_admin_log_user_id_c564eba6_fk_usuarios_id FOREIGN KEY (user_id) REFERENCES public.usuarios(id)
+);
+CREATE TABLE public.django_content_type (
+  id integer GENERATED ALWAYS AS IDENTITY NOT NULL,
+  app_label character varying NOT NULL,
+  model character varying NOT NULL,
+  CONSTRAINT django_content_type_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.django_migrations (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  app character varying NOT NULL,
+  name character varying NOT NULL,
+  applied timestamp with time zone NOT NULL,
+  CONSTRAINT django_migrations_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.django_session (
+  session_key character varying NOT NULL,
+  session_data text NOT NULL,
+  expire_date timestamp with time zone NOT NULL,
+  CONSTRAINT django_session_pkey PRIMARY KEY (session_key)
+);
+CREATE TABLE public.endereco (
+  id bigint NOT NULL DEFAULT nextval('endereco_id_seq'::regclass),
+  pessoa_id bigint NOT NULL,
+  tipo_endereco character varying DEFAULT 'COMERCIAL'::character varying,
+  logradouro character varying,
+  numero character varying,
+  complemento character varying,
+  bairro character varying,
+  cidade character varying,
+  uf character,
+  cep character varying,
+  principal boolean DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT endereco_pkey PRIMARY KEY (id),
+  CONSTRAINT endereco_pessoa_id_fkey FOREIGN KEY (pessoa_id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.fotos (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  created_at timestamp with time zone NOT NULL,
+  updated_at timestamp with time zone NOT NULL,
+  url_arquivo text NOT NULL,
+  nome_arquivo character varying NOT NULL,
+  tipo_arquivo character varying NOT NULL,
+  tamanho_arquivo bigint,
+  descricao text,
+  status character varying NOT NULL DEFAULT 'ativa'::character varying,
+  pessoa_id bigint NOT NULL,
+  CONSTRAINT fotos_pkey PRIMARY KEY (id),
+  CONSTRAINT fotos_pessoa_id_fkey FOREIGN KEY (pessoa_id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.importacao_xls (
+  id integer NOT NULL DEFAULT nextval('importacao_xls_id_seq'::regclass),
+  nome_arquivo character varying NOT NULL,
+  data_importacao timestamp without time zone DEFAULT now(),
+  total_registros integer,
+  registros_processados integer DEFAULT 0,
+  status character varying DEFAULT 'PENDENTE'::character varying,
+  observacoes text,
+  usuario_id uuid,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT importacao_xls_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.log_importacao (
+  id bigint NOT NULL DEFAULT nextval('log_importacao_id_seq'::regclass),
+  importacao_id integer NOT NULL,
+  tipo character varying,
+  mensagem text NOT NULL,
+  detalhes text,
+  linha_arquivo integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT log_importacao_pkey PRIMARY KEY (id),
+  CONSTRAINT log_importacao_importacao_id_fkey FOREIGN KEY (importacao_id) REFERENCES public.importacao_xls(id)
+);
+CREATE TABLE public.pessoa (
+  id bigint NOT NULL DEFAULT nextval('pessoa_id_seq'::regclass),
+  tipo character NOT NULL CHECK (tipo = ANY (ARRAY['F'::bpchar, 'J'::bpchar])),
+  goa character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT pessoa_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.pessoa_fisica (
+  id bigint NOT NULL,
+  nome character varying NOT NULL,
+  cpf character varying UNIQUE,
+  rg character varying,
+  nascimento date,
+  nome_mae character varying,
+  nome_pai character varying,
+  naturalidade character varying,
+  sexo character CHECK (sexo = ANY (ARRAY['M'::bpchar, 'F'::bpchar])),
+  estado_civil character varying,
+  telefone1 character varying,
+  telefone2 character varying,
+  ocupacao character varying,
+  vinculo character varying,
+  observacoes text,
+  possui_veiculos boolean DEFAULT false,
+  placa character varying,
+  marca_modelo character varying,
+  ano_veiculo integer,
+  cor_veiculo character varying,
+  idade smallint,
+  suspeita_obito boolean DEFAULT false,
+  qualificacao_socio character varying,
+  CONSTRAINT pessoa_fisica_pkey PRIMARY KEY (id),
+  CONSTRAINT pessoa_fisica_id_fkey FOREIGN KEY (id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.pessoa_juridica (
+  id bigint NOT NULL,
+  razao_social character varying NOT NULL,
+  nome_fantasia character varying,
+  cnpj character varying NOT NULL UNIQUE,
+  situacao_cadastral character varying DEFAULT 'ATIVA'::character varying,
+  data_abertura date,
+  data_fechamento date,
+  porte_empresa character varying,
+  capital_social numeric,
+  cnae_principal character varying,
+  cnae_descricao text,
+  mei boolean DEFAULT false,
+  optante_simples boolean DEFAULT false,
+  data_opcao_simples date,
+  data_exclusao_simples date,
+  possui_filial boolean DEFAULT false,
+  observacoes text,
+  CONSTRAINT pessoa_juridica_pkey PRIMARY KEY (id),
+  CONSTRAINT pessoa_juridica_id_fkey FOREIGN KEY (id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.relacionamento (
+  id bigint NOT NULL DEFAULT nextval('relacionamento_id_seq'::regclass),
+  pessoa_origem_id bigint NOT NULL,
+  tipo_origem character NOT NULL CHECK (tipo_origem = ANY (ARRAY['F'::bpchar, 'J'::bpchar])),
+  pessoa_destino_id bigint NOT NULL,
+  tipo_destino character NOT NULL CHECK (tipo_destino = ANY (ARRAY['F'::bpchar, 'J'::bpchar])),
+  tipo_relacionamento character varying NOT NULL,
+  descricao text,
+  data_inicio date,
+  data_fim date,
+  participacao numeric,
+  eh_auto boolean DEFAULT false,
+  fonte_importacao character varying,
+  confiabilidade smallint DEFAULT 5 CHECK (confiabilidade >= 1 AND confiabilidade <= 5),
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT relacionamento_pkey PRIMARY KEY (id),
+  CONSTRAINT relacionamento_pessoa_origem_id_fkey FOREIGN KEY (pessoa_origem_id) REFERENCES public.pessoa(id),
+  CONSTRAINT relacionamento_pessoa_destino_id_fkey FOREIGN KEY (pessoa_destino_id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.socio_empresa (
+  id bigint NOT NULL DEFAULT nextval('socio_empresa_id_seq'::regclass),
+  empresa_id bigint NOT NULL,
+  pessoa_id bigint,
+  cpf_cnpj character varying,
+  nome_socio character varying NOT NULL,
+  data_entrada date,
+  participacao_percentual numeric,
+  qualificacao character varying,
+  suspeita_obito boolean DEFAULT false,
+  nome_mae character varying,
+  data_nascimento date,
+  idade integer,
+  ordem_exibicao smallint DEFAULT 99,
+  fonte_importacao character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT socio_empresa_pkey PRIMARY KEY (id),
+  CONSTRAINT socio_empresa_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.pessoa(id),
+  CONSTRAINT socio_empresa_pessoa_id_fkey FOREIGN KEY (pessoa_id) REFERENCES public.pessoa(id)
+);
+CREATE TABLE public.usuarios (
+  password character varying NOT NULL,
+  last_login timestamp with time zone,
+  id uuid NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  nome character varying NOT NULL,
+  role character varying NOT NULL,
+  ativo boolean NOT NULL,
+  criado_em timestamp with time zone NOT NULL,
+  atualizado_em timestamp with time zone NOT NULL,
+  is_staff boolean NOT NULL,
+  is_superuser boolean NOT NULL,
+  CONSTRAINT usuarios_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.usuarios_groups (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  usuario_id uuid NOT NULL,
+  group_id integer NOT NULL,
+  CONSTRAINT usuarios_groups_pkey PRIMARY KEY (id),
+  CONSTRAINT usuarios_groups_usuario_id_1132ca50_fk_usuarios_id FOREIGN KEY (usuario_id) REFERENCES public.usuarios(id),
+  CONSTRAINT usuarios_groups_group_id_18c61092_fk_auth_group_id FOREIGN KEY (group_id) REFERENCES public.auth_group(id)
+);
+CREATE TABLE public.usuarios_user_permissions (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  usuario_id uuid NOT NULL,
+  permission_id integer NOT NULL,
+  CONSTRAINT usuarios_user_permissions_pkey PRIMARY KEY (id),
+  CONSTRAINT usuarios_user_permissions_usuario_id_232fd58d_fk_usuarios_id FOREIGN KEY (usuario_id) REFERENCES public.usuarios(id),
+  CONSTRAINT usuarios_user_permis_permission_id_af615ca1_fk_auth_perm FOREIGN KEY (permission_id) REFERENCES public.auth_permission(id)
+);
