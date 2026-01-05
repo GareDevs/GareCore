@@ -11,8 +11,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from .serializers import RegistroSerializer, LoginSerializer, UsuarioSerializer
-from .models import Usuario
+from .serializers import (
+    RegistroSerializer, LoginSerializer, UsuarioSerializer,
+    PessoaSerializer, PessoaFisicaSerializer, PessoaJuridicaSerializer,
+    EnderecoSerializer, ContatoEmpresaSerializer, SocioEmpresaSerializer,
+    RelacionamentoSerializer, FotoSerializer
+)
+from .models import (
+    Usuario, Pessoa, PessoaFisica, PessoaJuridica, Endereco,
+    ContatoEmpresa, SocioEmpresa, Relacionamento, Foto
+)
 
 # ------------------------
 # PÁGINAS ESTÁTICAS PROTEGIDAS POR LOGIN
@@ -153,3 +161,69 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.AllowAny()]  # permite registro
         return [permissions.IsAuthenticated(), IsAdminUser()]
+
+
+# ========================
+# VIEWSETS PARA DADOS
+# ========================
+
+class PessoaFisicaViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Pessoa Física"""
+    queryset = PessoaFisica.objects.all()
+    serializer_class = PessoaFisicaSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Usuários só veem seus próprios registros (ou todos se admin)
+        if self.request.user.is_admin:
+            return PessoaFisica.objects.all()
+        return PessoaFisica.objects.all()  # Ajustar conforme lógica de permissão
+
+
+class PessoaJuridicaViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Pessoa Jurídica"""
+    queryset = PessoaJuridica.objects.all()
+    serializer_class = PessoaJuridicaSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class EnderecoViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Endereço"""
+    queryset = Endereco.objects.all()
+    serializer_class = EnderecoSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class ContatoEmpresaViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Contato Empresa"""
+    queryset = ContatoEmpresa.objects.all()
+    serializer_class = ContatoEmpresaSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class SocioEmpresaViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Sócio Empresa"""
+    queryset = SocioEmpresa.objects.all()
+    serializer_class = SocioEmpresaSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class RelacionamentoViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Relacionamento"""
+    queryset = Relacionamento.objects.all()
+    serializer_class = RelacionamentoSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class FotoViewSet(viewsets.ModelViewSet):
+    """CRUD completo para Foto"""
+    queryset = Foto.objects.all()
+    serializer_class = FotoSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]

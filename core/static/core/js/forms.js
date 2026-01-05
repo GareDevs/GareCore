@@ -105,12 +105,16 @@ function loadDashboard() {
         const pfCount = document.getElementById('pf-count');
         const pjCount = document.getElementById('pj-count');
         
-        if (pfCount && typeof db !== 'undefined') {
-            pfCount.textContent = db.count('pessoa_fisica');
+        if (pfCount) {
+            api.contarPessoasFisicas().then(total => {
+                pfCount.textContent = total;
+            }).catch(err => console.error('Erro ao contar PF:', err));
         }
         
-        if (pjCount && typeof db !== 'undefined') {
-            pjCount.textContent = db.count('pessoa_juridica');
+        if (pjCount) {
+            api.contarPessoasJuridicas().then(total => {
+                pjCount.textContent = total;
+            }).catch(err => console.error('Erro ao contar PJ:', err));
         }
         
         console.log('✅ Dashboard atualizado');
@@ -1720,9 +1724,17 @@ function salvarPessoaFisica() {
 
         if (editingRecord && editingRecord.table === 'pessoa_fisica') {
             // Atualizar registro existente
-            db.update('pessoa_fisica', editingRecord.id, formData);
-            showNotification('Pessoa física atualizada com sucesso!', 'success');
-            editingRecord = null;
+            api.atualizarPessoaFisica(editingRecord.id, formData)
+                .then(() => {
+                    showNotification('Pessoa física atualizada com sucesso!', 'success');
+                    editingRecord = null;
+                    loadListaPessoasFisicas();
+                    loadDashboard();
+                })
+                .catch(err => {
+                    showNotification('Erro ao atualizar pessoa física: ' + err.message, 'error');
+                });
+            return;
         } else {
             // Validar se há dados mínimos preenchidos (evita salvar formulários vazios)
             const dadosMinimos = formData.nome && formData.nome.trim() !== '';
@@ -1736,20 +1748,16 @@ function salvarPessoaFisica() {
             // Inserir novo registro
             console.log('💾 Tentando salvar pessoa física:', formData);
             
-            if (typeof db === 'undefined') {
-                console.error('❌ Objeto db não está definido!');
-                console.log('🔍 Verificando objetos disponíveis:', typeof LocalDatabase, typeof window.db);
-                showNotification('Erro: Sistema de banco de dados não carregado', 'error');
-                return;
-            }
-            
-            console.log('🗄️ Objeto db disponível:', db);
-            console.log('🗄️ Tabela pessoa_fisica existe?', db.data?.pessoa_fisica);
-            
-            const result = db.insert('pessoa_fisica', formData);
-            console.log('✅ Pessoa física salva:', result);
-            console.log('📊 Estado atual da tabela:', db.getAll('pessoa_fisica'));
-            showNotification('Pessoa física cadastrada com sucesso!', 'success');
+            api.criarPessoaFisica(formData)
+                .then(result => {
+                    console.log('✅ Pessoa física salva:', result);
+                    showNotification('Pessoa física cadastrada com sucesso!', 'success');
+                    loadListaPessoasFisicas();
+                    loadDashboard();
+                })
+                .catch(err => {
+                    showNotification('Erro ao salvar pessoa física: ' + err.message, 'error');
+                });
         }
 
         clearFormPF();
@@ -1857,9 +1865,17 @@ function salvarPessoaJuridica() {
 
         if (editingRecord && editingRecord.table === 'pessoa_juridica') {
             // Atualizar registro existente
-            db.update('pessoa_juridica', editingRecord.id, formData);
-            showNotification('Pessoa jurídica atualizada com sucesso!', 'success');
-            editingRecord = null;
+            api.atualizarPessoaJuridica(editingRecord.id, formData)
+                .then(() => {
+                    showNotification('Pessoa jurídica atualizada com sucesso!', 'success');
+                    editingRecord = null;
+                    loadListaPessoasJuridicas();
+                    loadDashboard();
+                })
+                .catch(err => {
+                    showNotification('Erro ao atualizar pessoa jurídica: ' + err.message, 'error');
+                });
+            return;
         } else {
             // Validar se há dados mínimos preenchidos (evita salvar formulários vazios)
             const dadosMinimos = formData.razao_social && formData.razao_social.trim() !== '';
@@ -1873,20 +1889,16 @@ function salvarPessoaJuridica() {
             // Inserir novo registro
             console.log('💾 Tentando salvar pessoa jurídica:', formData);
             
-            if (typeof db === 'undefined') {
-                console.error('❌ Objeto db não está definido!');
-                console.log('🔍 Verificando objetos disponíveis:', typeof LocalDatabase, typeof window.db);
-                showNotification('Erro: Sistema de banco de dados não carregado', 'error');
-                return;
-            }
-            
-            console.log('🗄️ Objeto db disponível:', db);
-            console.log('🗄️ Tabela pessoa_juridica existe?', db.data?.pessoa_juridica);
-            
-            const result = db.insert('pessoa_juridica', formData);
-            console.log('✅ Pessoa jurídica salva:', result);
-            console.log('📊 Estado atual da tabela:', db.getAll('pessoa_juridica'));
-            showNotification('Pessoa jurídica cadastrada com sucesso!', 'success');
+            api.criarPessoaJuridica(formData)
+                .then(result => {
+                    console.log('✅ Pessoa jurídica salva:', result);
+                    showNotification('Pessoa jurídica cadastrada com sucesso!', 'success');
+                    loadListaPessoasJuridicas();
+                    loadDashboard();
+                })
+                .catch(err => {
+                    showNotification('Erro ao salvar pessoa jurídica: ' + err.message, 'error');
+                });
         }
 
         clearFormPJ();
@@ -1934,13 +1946,14 @@ function loadListaPessoasFisicas() {
     if (!container) return;
 
     try {
-        const pessoas = db.getAll('pessoa_fisica');
-        container.innerHTML = '';
+        api.listarPessoasFisicas().then(response => {
+            const pessoas = response.results || [];
+            container.innerHTML = '';
 
-        if (pessoas.length === 0) {
-            container.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma pessoa física cadastrada</td></tr>';
-            return;
-        }
+            if (pessoas.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma pessoa física cadastrada</td></tr>';
+                return;
+            }
 
         pessoas.forEach(pessoa => {
             const row = document.createElement('tr');
@@ -1950,13 +1963,13 @@ function loadListaPessoasFisicas() {
                 <td>${pessoa.rg || '-'}</td>
                 <td>${pessoa.telefone1 || '-'}</td>
                 <td>
-                    <button class="btn btn-sm btn-info me-1" onclick="verDetalhes('pessoa_fisica', '${pessoa.id}')" title="Ver Detalhes">
+                    <button class="btn btn-sm btn-info me-1" onclick="verDetalhes('pessoa_fisica', '${pessoa.pessoa_id}')" title="Ver Detalhes">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning me-1" onclick="editarPessoa('pessoa_fisica', '${pessoa.id}')" title="Editar">
+                    <button class="btn btn-sm btn-warning me-1" onclick="editarPessoa('pessoa_fisica', '${pessoa.pessoa_id}')" title="Editar">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="excluirPessoa('pessoa_fisica', '${pessoa.id}')" title="Excluir">
+                    <button class="btn btn-sm btn-danger" onclick="excluirPessoa('pessoa_fisica', '${pessoa.pessoa_id}')" title="Excluir">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
@@ -1965,6 +1978,10 @@ function loadListaPessoasFisicas() {
         });
 
         updateStatusBar(`${pessoas.length} pessoas físicas listadas`);
+        }).catch(error => {
+            console.error('Erro ao listar pessoas físicas:', error);
+            container.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+        });
     } catch (error) {
         console.error('Erro ao listar pessoas físicas:', error);
         container.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar dados</td></tr>';
@@ -1977,13 +1994,14 @@ function loadListaPessoasJuridicas() {
     if (!container) return;
 
     try {
-        const pessoas = db.getAll('pessoa_juridica');
-        container.innerHTML = '';
+        api.listarPessoasJuridicas().then(response => {
+            const pessoas = response.results || [];
+            container.innerHTML = '';
 
-        if (pessoas.length === 0) {
-            container.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma pessoa jurídica cadastrada</td></tr>';
-            return;
-        }
+            if (pessoas.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" class="text-center">Nenhuma pessoa jurídica cadastrada</td></tr>';
+                return;
+            }
 
         pessoas.forEach(pessoa => {
             const row = document.createElement('tr');
@@ -1991,15 +2009,15 @@ function loadListaPessoasJuridicas() {
                 <td>${pessoa.razao_social || '-'}</td>
                 <td>${pessoa.nome_fantasia || '-'}</td>
                 <td>${formatUtils.formatCNPJ(pessoa.cnpj) || '-'}</td>
-                <td><span class="badge bg-${pessoa.situacao === 'Ativa' ? 'success' : 'warning'}">${pessoa.situacao || 'N/A'}</span></td>
+                <td><span class="badge bg-${pessoa.situacao_cadastral === 'ATIVA' ? 'success' : 'warning'}">${pessoa.situacao_cadastral || 'N/A'}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-info me-1" onclick="verDetalhes('pessoa_juridica', '${pessoa.id}')" title="Ver Detalhes">
+                    <button class="btn btn-sm btn-info me-1" onclick="verDetalhes('pessoa_juridica', '${pessoa.pessoa_id}')" title="Ver Detalhes">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-warning me-1" onclick="editarPessoa('pessoa_juridica', '${pessoa.id}')" title="Editar">
+                    <button class="btn btn-sm btn-warning me-1" onclick="editarPessoa('pessoa_juridica', '${pessoa.pessoa_id}')" title="Editar">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="excluirPessoa('pessoa_juridica', '${pessoa.id}')" title="Excluir">
+                    <button class="btn btn-sm btn-danger" onclick="excluirPessoa('pessoa_juridica', '${pessoa.pessoa_id}')" title="Excluir">
                         <i class="fas fa-trash"></i>
                     </button>
                 </td>
@@ -2008,6 +2026,10 @@ function loadListaPessoasJuridicas() {
         });
 
         updateStatusBar(`${pessoas.length} pessoas jurídicas listadas`);
+        }).catch(error => {
+            console.error('Erro ao listar pessoas jurídicas:', error);
+            container.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar dados</td></tr>';
+        });
     } catch (error) {
         console.error('Erro ao listar pessoas jurídicas:', error);
         container.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar dados</td></tr>';
@@ -2016,13 +2038,14 @@ function loadListaPessoasJuridicas() {
 
 // Editar pessoa
 function editarPessoa(table, id) {
-    const pessoa = db.getById(table, id);
-    if (!pessoa) {
-        showNotification('Registro não encontrado', 'error');
-        return;
-    }
+    const table_api = table === 'pessoa_fisica' ? 'pessoas-fisicas' : 'pessoas-juridicas';
+    api.get(`/${table_api}/${id}/`).then(pessoa => {
+        if (!pessoa) {
+            showNotification('Registro não encontrado', 'error');
+            return;
+        }
 
-    editingRecord = { table, id };
+        editingRecord = { table, id };
 
     if (table === 'pessoa_fisica') {
         showSection('cadastro-pf');
@@ -2228,6 +2251,10 @@ function editarPessoa(table, id) {
             document.getElementById('pj-observacoes').value = pessoa.observacoes || '';
         }, 500);
     }
+    }).catch(err => {
+        showNotification('Erro ao carregar pessoa: ' + err.message, 'error');
+        console.error('Erro:', err);
+    });
 }
 
 // Ver detalhes com sistema simplificado
@@ -2235,18 +2262,23 @@ function verDetalhes(table, id) {
     try {
         console.log(`🔍 Abrindo detalhes: ${table}, ID: ${id}`);
         
-        const pessoa = db.getById(table, id);
-        if (!pessoa) {
-            showNotification('Registro não encontrado', 'error');
-            return;
-        }
+        const table_api = table === 'pessoa_fisica' ? 'pessoas-fisicas' : 'pessoas-juridicas';
+        api.get(`/${table_api}/${id}/`).then(pessoa => {
+            if (!pessoa) {
+                showNotification('Registro não encontrado', 'error');
+                return;
+            }
 
-        // Criar título e conteúdo
-        const titulo = `<i class="fas fa-${table === 'pessoa_fisica' ? 'user' : 'building'} me-2"></i>Detalhes - ${table === 'pessoa_fisica' ? pessoa.nome : pessoa.razao_social}`;
-        const conteudo = construirConteudoDetalhes(table, pessoa);
-        
-        // Usar sistema global
-        abrirModalDetalhes(titulo, conteudo);
+            // Criar título e conteúdo
+            const titulo = `<i class="fas fa-${table === 'pessoa_fisica' ? 'user' : 'building'} me-2"></i>Detalhes - ${table === 'pessoa_fisica' ? pessoa.nome : pessoa.razao_social}`;
+            const conteudo = construirConteudoDetalhes(table, pessoa);
+            
+            // Usar sistema global
+            abrirModalDetalhes(titulo, conteudo);
+        }).catch(error => {
+            console.error('Erro ao carregar detalhes:', error);
+            showNotification('Erro ao carregar detalhes', 'error');
+        });
 
     } catch (error) {
         console.error('Erro ao carregar detalhes:', error);
@@ -2563,17 +2595,22 @@ function fecharModalSeguro() {
 function excluirPessoa(table, id) {
     if (confirm('Deseja realmente excluir este registro?')) {
         try {
-            db.delete(table, id);
-            showNotification('Registro excluído com sucesso!', 'success');
-            
-            // Recarregar lista atual
-            if (table === 'pessoa_fisica') {
-                loadListaPessoasFisicas();
-            } else {
-                loadListaPessoasJuridicas();
-            }
-            
-            loadDashboard();
+            const table_api = table === 'pessoa_fisica' ? 'pessoas-fisicas' : 'pessoas-juridicas';
+            api.delete(`/${table_api}/${id}/`).then(() => {
+                showNotification('Registro excluído com sucesso!', 'success');
+                
+                // Recarregar lista atual
+                if (table === 'pessoa_fisica') {
+                    loadListaPessoasFisicas();
+                } else {
+                    loadListaPessoasJuridicas();
+                }
+                
+                loadDashboard();
+            }).catch(err => {
+                showNotification('Erro ao excluir: ' + err.message, 'error');
+                console.error('Erro:', err);
+            });
         } catch (error) {
             console.error('Erro ao excluir:', error);
             showNotification('Erro ao excluir registro', 'error');
@@ -2596,27 +2633,102 @@ function validarGoaEmTempoReal(input, statusElementId) {
     }
     
     // Validar formato
-    const formatoValido = db.validateGOAFormat(goa);
+    const validation = validateGOAFormat(goa);
     
-    if (!formatoValido.valid) {
-        statusDiv.innerHTML = `<small class="text-danger"><i class="fas fa-times me-1"></i>${formatoValido.message}</small>`;
+    if (!validation.valido) {
+        statusDiv.innerHTML = `<small class="text-danger"><i class="fas fa-times me-1"></i>${validation.mensagem}</small>`;
         input.classList.add('is-invalid');
         input.classList.remove('is-valid');
         return;
     }
     
     // Verificar duplicidade
-    const jaExiste = db.goaExists(goa, editingRecord?.id, editingRecord?.table);
-    
-    if (jaExiste) {
-        statusDiv.innerHTML = `<small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>GOA já existe no sistema</small>`;
-        input.classList.add('is-invalid');
-        input.classList.remove('is-valid');
-    } else {
-        statusDiv.innerHTML = `<small class="text-success"><i class="fas fa-check me-1"></i>${formatoValido.message}</small>`;
-        input.classList.remove('is-invalid');
-        input.classList.add('is-valid');
+    const table_api = editingRecord?.table === 'pessoa_fisica' ? 'pessoas-fisicas' : 'pessoas-juridicas';
+    api.get(`/${table_api}/validate-goa/`, { goa, exclude_id: editingRecord?.id }).then(response => {
+        if (response.existe) {
+            statusDiv.innerHTML = `<small class="text-danger"><i class="fas fa-exclamation-triangle me-1"></i>GOA já existe no sistema</small>`;
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+        } else {
+            statusDiv.innerHTML = `<small class="text-success"><i class="fas fa-check me-1"></i>${validation.mensagem}</small>`;
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+    }).catch(err => {
+        console.error('Erro ao validar GOA:', err);
+    });
+}
+
+// Validar formato GOA (sincronizado com backend utils.py)
+function validateGOAFormat(goa) {
+    if (!goa) {
+        return { valido: true, mensagem: '' };
     }
+    
+    goa = goa.trim().toUpperCase();
+    
+    if (goa.length < 8) {
+        return {
+            valido: false,
+            mensagem: 'GOA deve ter pelo menos 8 caracteres'
+        };
+    }
+    
+    const prefixos = {
+        'GOAINV': 'Investigação',
+        'GOADEN': 'Denúncia',
+        'GOACIV': 'Processo Civil',
+        'GOACRI': 'Processo Criminal',
+        'GOAADM': 'Administrativo',
+        'GOAJUD': 'Judicial',
+        'GOAEXT': 'Extrajudicial',
+        'GOATRI': 'Tributário',
+        'GOATRA': 'Trabalhista',
+        'GOAFAM': 'Família',
+        'GOACOM': 'Comercial',
+        'GOAIMO': 'Imobiliário',
+        'GOACON': 'Consumidor',
+        'GOAENV': 'Ambiental',
+        'GOACOR': 'Corporativo',
+        'GOASEG': 'Seguros',
+        'GOAPRE': 'Previdenciário',
+        'GOAMED': 'Médico',
+        'GOAEDU': 'Educacional',
+        'GOATEC': 'Tecnologia',
+        'GOAALT': 'Outros'
+    };
+    
+    const prefixo = goa.substring(0, 6);
+    const numero = goa.substring(6);
+    
+    if (!prefixos[prefixo]) {
+        return {
+            valido: false,
+            mensagem: `Prefixo inválido. Use: ${Object.keys(prefixos).join(', ')}`
+        };
+    }
+    
+    if (!/^\d+$/.test(numero)) {
+        return {
+            valido: false,
+            mensagem: 'Número GOA deve conter apenas dígitos'
+        };
+    }
+    
+    if (parseInt(numero) < 1) {
+        return {
+            valido: false,
+            mensagem: 'Número GOA deve ser positivo'
+        };
+    }
+    
+    return {
+        valido: true,
+        mensagem: `GOA válido: ${prefixos[prefixo]} #${numero}`,
+        prefixo: prefixo,
+        numero: numero,
+        descricao: prefixos[prefixo]
+    };
 }
 
 // Configurar event listeners dos formulários

@@ -1,25 +1,7 @@
-/**
- * Sistema de Banco de Dados Local para Aplicação Desktop
- * Utiliza localStorage para persistir dados offline
- */
 
-class LocalDatabase {
-    constructor() {
-        this.data = {
-            pessoa_fisica: [],
-            pessoa_juridica: [],
-            fotos: [],
-            relacionamentos: []
-        };
-        this.counters = {
-            pessoa_fisica: 1,
-            pessoa_juridica: 1,
-            fotos: 1,
-            relacionamentos: 1
-        };
-        this.initializeDatabase();
-    }
 
+class Database {
+    
     // Inicializar banco de dados local
     initializeDatabase() {
         console.log('🔧 Inicializando banco de dados local...');

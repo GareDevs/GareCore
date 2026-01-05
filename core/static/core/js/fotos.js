@@ -140,14 +140,15 @@ function loadPessoasParaFoto(tipo) {
         // Mostrar loading
         pessoaSelect.innerHTML = '<option value="">Carregando pessoas...</option>';
         
-        const table = tipo === 'fisica' ? 'pessoa_fisica' : 'pessoa_juridica';
-        const pessoas = db.getAll(table);
+        const apiEndpoint = tipo === 'fisica' ? 'pessoas-fisicas' : 'pessoas-juridicas';
+        api.get(`/${apiEndpoint}/`).then(response => {
+            const pessoas = response.results || [];
 
-        // Limpar e adicionar opção padrão
-        pessoaSelect.innerHTML = '<option value="">Selecione uma pessoa...</option>';
+            // Limpar e adicionar opção padrão
+            pessoaSelect.innerHTML = '<option value="">Selecione uma pessoa...</option>';
 
-        if (pessoas.length === 0) {
-            pessoaSelect.innerHTML = '<option value="">Nenhuma pessoa encontrada</option>';
+            if (pessoas.length === 0) {
+                pessoaSelect.innerHTML = '<option value="">Nenhuma pessoa encontrada</option>';
             pessoaSelect.disabled = true;
             return;
         }
@@ -181,13 +182,17 @@ function loadPessoasParaFoto(tipo) {
             option.title = texto; // Tooltip para nomes longos
             pessoaSelect.appendChild(option);
         });
-        
         // Habilitar select
         pessoaSelect.disabled = false;
         
         console.log(`✅ ${pessoas.length} pessoas carregadas para associação com fotos`);
         showNotification(`${pessoas.length} ${tipo === 'fisica' ? 'pessoas físicas' : 'pessoas jurídicas'} carregadas`, 'success');
-        
+        }).catch(error => {
+            console.error('❌ Erro ao carregar pessoas para fotos:', error);
+            pessoaSelect.innerHTML = '<option value="">Erro ao carregar pessoas</option>';
+            pessoaSelect.disabled = true;
+            showNotification('Erro ao carregar lista de pessoas', 'error');
+        });
     } catch (error) {
         console.error('❌ Erro ao carregar pessoas para fotos:', error);
         pessoaSelect.innerHTML = '<option value="">Erro ao carregar pessoas</option>';
@@ -246,8 +251,22 @@ function uploadFoto() {
             };
 
             // Salvar no banco
-            try {
-                db.insert('fotos', fotoData);
+            // Fazer upload via API
+            const formData = new FormData();
+            formData.append('pessoa_id', pessoaId);
+            formData.append('arquivo', arquivo);
+            formData.append('descricao', descricao);
+            
+            fetch('/api/fotos/', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: formData
+            }).then(response => {
+                if (!response.ok) throw new Error('Erro ao upload');
+                return response.json();
+            }).then(data => {
                 showNotification('✅ Foto enviada com sucesso!', 'success');
                 
                 // Limpar formulário
@@ -255,35 +274,14 @@ function uploadFoto() {
                 document.getElementById('preview-container').style.display = 'none';
                 loadPessoasParaFoto(); // Resetar seleção
                 loadGaleriaFotos(); // Atualizar galeria
-                
-            } catch (error) {
+            }).catch(error => {
                 console.error('Erro ao salvar foto:', error);
                 showNotification('❌ Erro ao salvar a foto no banco de dados', 'error');
-            }
+            });
             
             // Restaurar botão
             btnSubmit.innerHTML = originalText;
             btnSubmit.disabled = false;
-        };
-        
-        reader.onerror = function() {
-            showNotification('❌ Erro ao processar a imagem', 'error');
-            btnSubmit.innerHTML = originalText;
-            btnSubmit.disabled = false;
-        };
-        
-        reader.readAsDataURL(arquivoFoto);
-        document.getElementById('pessoa-foto').innerHTML = '<option value="">Selecione primeiro o tipo...</option>';
-        
-        // Recarregar galeria
-        loadGaleriaFotos();
-        loadDashboard();
-        updateStatusBar('Nova foto adicionada');
-        
-    } catch (error) {
-        console.error('Erro ao fazer upload da foto:', error);
-        showNotification('Erro ao associar foto', 'error');
-    }
 }
 
 // Validar URL de imagem - VERSÃO MELHORADA
@@ -363,8 +361,8 @@ function loadGaleriaFotos() {
     const galeriaContainer = document.getElementById('galeria-fotos');
     if (!galeriaContainer) return;
 
-    try {
-        const fotos = db.getAll('fotos');
+    api.listarFotos().then(response => {
+        const fotos = response.results || [];
         galeriaContainer.innerHTML = '';
 
         if (fotos.length === 0) {
@@ -387,10 +385,10 @@ function loadGaleriaFotos() {
         });
 
         updateStatusBar(`${fotos.length} fotos na galeria`);
-    } catch (error) {
+    }).catch(error => {
         console.error('Erro ao carregar galeria:', error);
         showNotification('Erro ao carregar galeria de fotos', 'error');
-    }
+    });
 }
 
 // Obter informações da pessoa
@@ -468,10 +466,9 @@ function createFotoCard(foto, pessoa) {
 
 // Visualizar foto em modal melhorado
 function visualizarFoto(fotoId) {
-    try {
-        console.log('📸 Iniciando visualização da foto:', fotoId);
-        
-        const foto = db.getById('fotos', fotoId);
+    console.log('📸 Iniciando visualização da foto:', fotoId);
+    
+    api.obterFoto(fotoId).then(foto => {
         if (!foto) {
             showNotification('Foto não encontrada', 'error');
             return;
@@ -481,11 +478,9 @@ function visualizarFoto(fotoId) {
         
         // Criar modal customizado para visualização de foto
         criarModalVisualizacaoFoto(foto, pessoa);
-        
-    } catch (error) {
-        console.error('Erro ao visualizar foto:', error);
-        showNotification('Erro ao visualizar foto', 'error');
-    }
+    }).catch(err => {
+        showNotification('Erro ao carregar foto: ' + err.message, 'error');
+    });
 }
 
 // Função para lidar com carregamento bem-sucedido da imagem
@@ -645,7 +640,12 @@ function editarFoto(fotoId) {
 function excluirFoto(fotoId) {
     if (confirm('Deseja realmente excluir esta foto?')) {
         try {
-            db.delete('fotos', fotoId);
+            api.deletarFoto(fotoId).then(() => {
+                showNotification('Foto deletada com sucesso!', 'success');
+                loadGaleriaFotos();
+            }).catch(err => {
+                showNotification('Erro ao deletar foto: ' + err.message, 'error');
+            });
             showNotification('Foto excluída com sucesso!', 'success');
             loadGaleriaFotos();
             loadDashboard();

@@ -5,7 +5,13 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'usuarios', views.UsuarioViewSet)
-#router.register()
+router.register(r'pessoa-fisica', views.PessoaFisicaViewSet)
+router.register(r'pessoa-juridica', views.PessoaJuridicaViewSet)
+router.register(r'enderecos', views.EnderecoViewSet)
+router.register(r'contatos-empresa', views.ContatoEmpresaViewSet)
+router.register(r'socios-empresa', views.SocioEmpresaViewSet)
+router.register(r'relacionamentos', views.RelacionamentoViewSet)
+router.register(r'fotos', views.FotoViewSet)
 
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
