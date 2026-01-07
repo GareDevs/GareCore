@@ -277,6 +277,7 @@ class PessoaJuridicaViewSet(viewsets.ModelViewSet):
     ordering_fields = ['razao_social', 'pessoa__created_at']
     ordering = ['-pessoa__created_at']
     
+    
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return PessoaJuridicaCreateUpdateSerializer

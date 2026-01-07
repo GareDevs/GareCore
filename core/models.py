@@ -46,7 +46,7 @@ class TimeStampedModel(models.Model):
 class Pessoa(TimeStampedModel):
     TIPO_CHOICES = (('F', 'Física'), ('J', 'Jurídica'))
     tipo = models.CharField(max_length=1, choices=TIPO_CHOICES)
-    goa = models.CharField(max_length=100, unique=True, blank=True, validators=[validate_goa])
+    goa = models.CharField(max_length=100, unique=True,null=True, blank=True, validators=[validate_goa])
 
     class Meta:
         db_table = 'pessoa'
@@ -105,17 +105,45 @@ class PessoaJuridica(models.Model):
     nome_fantasia = models.CharField(max_length=300, blank=True, null=True)
     cnpj = models.CharField(max_length=14, unique=True)
     situacao_cadastral = models.CharField(max_length=50, default='ATIVA')
+    
+    # Datas principais
     data_abertura = models.DateField(blank=True, null=True)
     data_fechamento = models.DateField(blank=True, null=True)
+    data_situacao_cadastral = models.DateField(blank=True, null=True)
+    
+    # Classificação
     porte_empresa = models.CharField(max_length=50, blank=True, null=True)
+    tipo = models.CharField(max_length=100, blank=True, null=True)
+    situacao = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Financeiro
     capital_social = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    
+    # Atividade econômica
     cnae_principal = models.CharField(max_length=20, blank=True, null=True)
     cnae_descricao = models.TextField(blank=True, null=True)
+    
+    # Contatos
+    email = models.EmailField(blank=True, null=True)
+    cep = models.CharField(max_length=9, blank=True, null=True)
+    telefone1 = models.CharField(max_length=15, blank=True, null=True)
+    telefone2 = models.CharField(max_length=15, blank=True, null=True)
+    
+    # Endereços
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    cidade = models.CharField(max_length=100, blank=True, null=True)
+    possui_filial = models.BooleanField(default=False)
+    endereco_filial = models.CharField(max_length=255, blank=True, null=True)
+    cidade_filial = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Simples Nacional
+    situacao_simples_nacional = models.CharField(max_length=20, blank=True, null=True)
     mei = models.BooleanField(default=False)
     optante_simples = models.BooleanField(default=False)
     data_opcao_simples = models.DateField(blank=True, null=True)
     data_exclusao_simples = models.DateField(blank=True, null=True)
-    possui_filial = models.BooleanField(default=False)
+    
+    # Observações
     observacoes = models.TextField(blank=True, null=True)
 
     class Meta:

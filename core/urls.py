@@ -1,17 +1,6 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
 
 from . import views
-
-router = DefaultRouter()
-router.register(r'usuarios', views.UsuarioViewSet)
-router.register(r'pessoa-fisica', views.PessoaFisicaViewSet)
-router.register(r'pessoa-juridica', views.PessoaJuridicaViewSet)
-router.register(r'enderecos', views.EnderecoViewSet)
-router.register(r'contatos-empresa', views.ContatoEmpresaViewSet)
-router.register(r'socios-empresa', views.SocioEmpresaViewSet)
-router.register(r'relacionamentos', views.RelacionamentoViewSet)
-router.register(r'fotos', views.FotoViewSet)
 
 urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
@@ -21,6 +10,7 @@ urlpatterns = [
     path('listar-pj/', views.listar_pj, name='listar_pj'),
     path('fotos/', views.fotos, name='fotos'),
     path('arvore/', views.arvore, name='arvore'),
+    path('debug-api/', views.debug_api, name='debug_api'),
 
     # API
     path('api/registro/', views.RegistroView.as_view(), name='registro'),
@@ -28,5 +18,5 @@ urlpatterns = [
     path('api/logout/', views.LogoutView.as_view(), name='api_logout'),
     path('api/perfil/', views.PerfilView.as_view(), name='api_perfil'),
     path('api/verify-token/', views.VerifyTokenView.as_view(), name='verify_token'),
-    path('api/', include(router.urls)),
+    path('api/', include('core.api.urls')),
 ]

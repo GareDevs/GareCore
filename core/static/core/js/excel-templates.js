@@ -545,7 +545,7 @@ function mostrarPreviewImportacao(cabecalhos, dadosLinhas, tipoPessoa) {
 }
 
 // Confirmar e executar importação (otimizada)
-function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
+async function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
     try {
         console.log('🚀 Iniciando processo de importação...');
         
@@ -594,7 +594,10 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
         
         // Pre-carregar dados existentes no cache
         try {
-            const existentes = db.getAll(tipoPessoa);
+            const apiCall = tipoPessoa === 'pessoa_fisica' ? 
+                await api.listarPessoasFisicas() : 
+                await api.listarPessoasJuridicas();
+            const existentes = apiCall.results || apiCall;
             console.log(`📚 Registros existentes no banco (${tipoPessoa}):`, existentes.length);
             existentes.forEach(pessoa => {
                 if (tipoPessoa === 'pessoa_fisica' && pessoa.cpf) {
@@ -612,7 +615,7 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
             console.warn('Aviso ao carregar cache:', error);
         }
         
-        function processarLote() {
+        async function processarLote() {
             console.log(`🔄 PROCESSANDO LOTE ${loteAtual + 1}...`);
             const inicio = loteAtual * LOTE_SIZE;
             const fim = Math.min(inicio + LOTE_SIZE, dadosLinhas.length);
@@ -622,7 +625,8 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
             statusText.textContent = `Processando linhas ${inicio + 1} a ${fim} de ${dadosLinhas.length}...`;
             
             // Processar lote atual com tratamento robusto
-            loteLinhas.forEach((linha, indexLote) => {
+            for (const linha of loteLinhas) {
+                const indexLote = loteLinhas.indexOf(linha);
                 const indexGlobal = inicio + indexLote;
                 
                 try {
@@ -658,9 +662,13 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
                             campos: Object.keys(dadosPessoa).length
                         });
                         
-                        const resultado = db.insert(tipoPessoa, dadosPessoa);
+                        const apiCreate = tipoPessoa === 'pessoa_fisica' ?
+                            await api.criarPessoaFisica(dadosPessoa) :
+                            await api.criarPessoaJuridica(dadosPessoa);
                         
-                        console.log(`🔍 Resultado db.insert():`, resultado);
+                        const resultado = apiCreate;
+                        
+                        console.log(`🔍 Resultado API:`, resultado);
                         
                         if (resultado && resultado.id) {
                             // Atualizar cache com novo registro
@@ -669,7 +677,9 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
                             console.log(`✅ Linha ${indexGlobal + 2}: ${dadosPessoa.nome || dadosPessoa.razao_social} importada com ID ${resultado.id}`);
                             
                             // Verificar se realmente foi salvo
-                            const verificacao = db.get(tipoPessoa, resultado.id);
+                            const verificacao = tipoPessoa === 'pessoa_fisica' ?
+                                await api.obterPessoaFisica(resultado.id).catch(() => null) :
+                                await api.obterPessoaJuridica(resultado.id).catch(() => null);
                             if (verificacao) {
                                 console.log(`✅ CONFIRMADO: Registro ${resultado.id} está no banco!`);
                             } else {
@@ -696,7 +706,7 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
                     errosDetalhados.push(mensagemErro);
                     console.warn(`❌ ${mensagemErro}`, {linha, dadosPessoa: dadosPessoa || 'Não processado'});
                 }
-            });
+            }
             
             // Atualizar progress bar e contador
             const progresso = ((fim / dadosLinhas.length) * 100);
@@ -718,19 +728,19 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
             if (fim < dadosLinhas.length) {
                 console.log(`⏭️ Próximo lote: ${fim + 1} a ${Math.min(fim + LOTE_SIZE, dadosLinhas.length)}`);
                 // Processar próximo lote imediatamente para máxima velocidade
-                processarLote();
+                await processarLote();
             } else {
                 console.log('🏁 TODOS OS LOTES PROCESSADOS! Iniciando finalização...');
                 console.log(`📊 TOTAIS FINAIS: Sucessos=${sucessos}, Erros=${erros}`);
                 // Aguardar 100ms para garantir que UI atualizou
-                setTimeout(() => {
+                setTimeout(async () => {
                     console.log('🔚 Chamando finalizarImportacao()...');
-                    finalizarImportacao();
+                    await finalizarImportacao();
                 }, 100);
             }
         }
         
-        function finalizarImportacao() {
+        async function finalizarImportacao() {
             console.log('═══════════════════════════════════════════');
             console.log('🏁 FUNÇÃO finalizarImportacao() CHAMADA!');
             console.log('═══════════════════════════════════════════');
@@ -739,13 +749,16 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
             console.log(`   📊 Total processado: ${sucessos + erros}`);
             
             // Salvar IMEDIATAMENTE antes de qualquer outra coisa
-            console.log('💾 SALVANDO DADOS NO LOCALSTORAGE...');
+            console.log('💾 SALVANDO DADOS NA API...');
             try {
-                db.saveToStorage();
+                // Dados já estão salvos na API via criar/atualizar
                 console.log('✅ DADOS SALVOS COM SUCESSO!');
                 
                 // Verificar se realmente salvou
-                const verificacao = db.getAll(tipoPessoa);
+                const apiCall = tipoPessoa === 'pessoa_fisica' ? 
+                    await api.listarPessoasFisicas() :
+                    await api.listarPessoasJuridicas();
+                const verificacao = apiCall.results || apiCall;
                 console.log(`🔍 VERIFICAÇÃO: ${verificacao.length} registros no banco agora`);
             } catch (saveError) {
                 console.error('❌ ERRO AO SALVAR:', saveError);
@@ -815,14 +828,18 @@ function confirmarImportacao(tipoPessoa, cabecalhos, dadosLinhas, botao) {
                 
                 // Atualizar interface após delay de 500ms
                 console.log('⏰ Agendando atualização da interface em 500ms...');
-                setTimeout(() => {
+                setTimeout(async () => {
                     console.log('═══════════════════════════════════════════');
                     console.log('🔄 INICIANDO ATUALIZAÇÃO DA INTERFACE');
                     console.log('═══════════════════════════════════════════');
                     
                     try {
                         // Verificar novamente quantos registros temos
-                        const totalAgora = db.getAll(tipoPessoa).length;
+                        const apiCall = tipoPessoa === 'pessoa_fisica' ? 
+                            await api.listarPessoasFisicas() :
+                            await api.listarPessoasJuridicas();
+                        const resultados = apiCall.results || apiCall;
+                        const totalAgora = resultados.length;
                         console.log(`📊 Total de registros no banco: ${totalAgora}`);
                         
                         // Recarregar dados na interface
@@ -1126,7 +1143,7 @@ function atualizarCache(dadosPessoa, tipoPessoa, cache) {
 
 // Cache para verificação de duplicatas (mais rápido)
 let cacheDuplicatas = null;
-function verificarDuplicataRapida(dadosPessoa, tipoPessoa) {
+async function verificarDuplicataRapida(dadosPessoa, tipoPessoa) {
     // Inicializar cache se necessário
     if (!cacheDuplicatas) {
         cacheDuplicatas = {
@@ -1135,11 +1152,15 @@ function verificarDuplicataRapida(dadosPessoa, tipoPessoa) {
         };
         
         // Preencher cache com dados existentes
-        db.getAll('pessoa_fisica').forEach(p => {
+        const pfRes = await api.listarPessoasFisicas();
+        const pessoasFisicas = pfRes.results || pfRes;
+        pessoasFisicas.forEach(p => {
             if (p.cpf) cacheDuplicatas.pessoa_fisica.add(p.cpf.replace(/\D/g, ''));
         });
         
-        db.getAll('pessoa_juridica').forEach(p => {
+        const pjRes = await api.listarPessoasJuridicas();
+        const pessoasJuridicas = pjRes.results || pjRes;
+        pessoasJuridicas.forEach(p => {
             if (p.cnpj) cacheDuplicatas.pessoa_juridica.add(p.cnpj.replace(/\D/g, ''));
         });
     }

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Árvore de Relacionamentos{% endblock %}
 
 {% block content %}
@@ -8,6 +9,7 @@
             <h2><i class="fas fa-project-diagram me-2"></i>Árvore de Relacionamentos</h2>
         </div>
     </div>
+
 
     <div class="row mt-4">
         <!-- Painel lateral esquerdo -->
@@ -173,71 +175,10 @@
                         </div>
                     </div>
 
-                    <!-- Controles de layout e ferramentas -->
+                    <!-- Controles essenciais -->
                     <div class="row mb-3">
-                        <!-- Layouts -->
-                        <div class="col-md-6">
-                            <label class="form-label small"><i class="fas fa-sitemap me-1"></i>Layout da Árvore:</label>
-                            <div class="btn-group w-100" role="group">
-                                <button class="btn btn-sm btn-outline-primary active" data-layout="force" onclick="alterarLayoutArvore('force')">
-                                    <i class="fas fa-atom me-1"></i>Força
-                                </button>
-                                <button class="btn btn-sm btn-outline-primary" data-layout="hierarchical" onclick="alterarLayoutArvore('hierarchical')">
-                                    <i class="fas fa-sitemap me-1"></i>Árvore
-                                </button>
-                                <button class="btn btn-sm btn-outline-primary" data-layout="circular" onclick="alterarLayoutArvore('circular')">
-                                    <i class="fas fa-circle-notch me-1"></i>Circular
-                                </button>
-                            </div>
-                            <div class="btn-group w-100 mt-1" role="group">
-                                <button class="btn btn-sm btn-outline-success" data-layout="radial" onclick="alterarLayoutArvore('radial')">
-                                    <i class="fas fa-sun me-1"></i>Radial
-                                </button>
-                                <button class="btn btn-sm btn-outline-success" data-layout="grid" onclick="alterarLayoutArvore('grid')">
-                                    <i class="fas fa-th me-1"></i>Grade
-                                </button>
-                                <button class="btn btn-sm btn-outline-success" data-layout="cluster" onclick="alterarLayoutArvore('cluster')">
-                                    <i class="fas fa-layer-group me-1"></i>Grupos
-                                </button>
-                            </div>
-                            <div class="btn-group w-100 mt-1" role="group">
-                                <button class="btn btn-sm btn-outline-warning" data-layout="timeline" onclick="alterarLayoutArvore('timeline')">
-                                    <i class="fas fa-timeline me-1"></i>Timeline
-                                </button>
-                                <button class="btn btn-sm btn-outline-warning" data-layout="spiral" onclick="alterarLayoutArvore('spiral')">
-                                    <i class="fas fa-hurricane me-1"></i>Espiral
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" data-layout="free" onclick="alterarLayoutArvore('free')">
-                                    <i class="fas fa-hand-paper me-1"></i>Livre
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Zoom & Exportar -->
-                        <div class="col-md-3">
-                            <label class="form-label small"><i class="fas fa-search-plus me-1"></i>Zoom & Exportar:</label>
-                            <div class="btn-group w-100" role="group">
-                                <button class="btn btn-sm btn-outline-info" id="zoom-in"><i class="fas fa-plus"></i></button>
-                                <button class="btn btn-sm btn-outline-info" id="zoom-reset"><i class="fas fa-home"></i></button>
-                                <button class="btn btn-sm btn-outline-info" id="zoom-out"><i class="fas fa-minus"></i></button>
-                            </div>
-                            <button class="btn btn-sm btn-success w-100 mt-1" id="exportar-arvore">
-                                <i class="fas fa-download me-1"></i>Exportar
-                            </button>
-                        </div>
-
-                        <!-- Organização -->
-                        <div class="col-md-3">
-                            <label class="form-label small"><i class="fas fa-cogs me-1"></i>Organização:</label>
-                            <div class="btn-group w-100" role="group">
-                                <button class="btn btn-sm btn-outline-success" id="expandir-todos"><i class="fas fa-expand-arrows-alt"></i></button>
-                                <button class="btn btn-sm btn-outline-warning" id="recolher-todos"><i class="fas fa-compress-arrows-alt"></i></button>
-                                <button class="btn btn-sm btn-outline-secondary" id="reorganizar"><i class="fas fa-sync-alt"></i></button>
-                            </div>
-                        </div>
-
                         <!-- Espaçamento -->
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <label class="form-label small"><i class="fas fa-arrows-alt-h me-1"></i>Espaçamento:</label>
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-sm btn-outline-info" id="diminuir-espaco"><i class="fas fa-compress-alt"></i></button>
@@ -247,8 +188,6 @@
                             <small class="text-muted d-block text-center mt-1"><span id="valor-espacamento">150</span>px</small>
                         </div>
                     </div>
-
-                    <!-- Botões de limpeza -->
                     <div class="d-flex justify-content-end">
                         <div class="btn-group btn-group-sm" role="group">
                             <button class="btn btn-outline-warning" onclick="limparConexoesAutomaticas()">
@@ -276,12 +215,42 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- ===== FASE 1: Novos módulos refatorados ===== -->
+
+<!-- 1. API Cliente - consolidar todas as chamadas API -->
+<script src="{% static 'core/js/api-relacionamentos.js' %}"></script>
+
+<!-- 2. Lógica de Negócio - gerenciar estado e operações -->
+<script src="{% static 'core/js/arvore-logica.js' %}"></script>
+
+<!-- 3. Renderização D3 - apenas visualização -->
+<script src="{% static 'core/js/arvore-d3-render.js' %}"></script>
+
+<!-- 4. Orquestradora Principal - integrar tudo -->
+<script src="{% static 'core/js/arvore-app.js' %}"></script>
+
+<!-- ===== Testes de Integração ===== -->
+<script src="{% static 'core/js/teste-integracao.js' %}"></script>
+
+<!-- ===== Módulos auxiliares ===== -->
+
+<!-- Manipulação visual de vínculos (mantém funcionalidade) -->
+<script src="{% static 'core/js/vinculos-avancados.js' %}"></script>
+
+<!-- Scripts antigos (mantidos por compatibilidade durante transição) -->
+<!-- <script src="{% static 'core/js/arvore.js' %}"></script> -->
+<!-- <script src="{% static 'core/js/arvore-interativa.js' %}"></script> -->
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Carregar árvore se ainda não foi carregada
-        if (!document.getElementById('arvore-container')?.children.length) {
-            loadArvoreRelacionamentos();
+        // Mostrar esta seção quando acessada diretamente
+        const section = document.getElementById('arvore');
+        if (section) {
+            section.style.display = 'block';
         }
+        
+        // Inicializar árvore usando novo sistema
+        loadArvoreRelacionamentos();
     });
 </script>
 {% endblock %}

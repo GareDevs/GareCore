@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug API - Listar Pessoas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input[type="password"],
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            font-size: 1em;
+            min-width: 200px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button.success {
+            background-color: #27ae60;
+        }
+        
+        button.success:hover {
+            background-color: #229954;
+        }
+        
+        .output {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            overflow-x: auto;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            color: #c0392b;
+            background-color: #fadbd8;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #c0392b;
+            margin-top: 10px;
+        }
+        
+        .success {
+            color: #27ae60;
+            background-color: #d5f4e6;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #27ae60;
+            margin-top: 10px;
+        }
+        
+        .warning {
+            color: #e67e22;
+            background-color: #fdebd0;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #e67e22;
+            margin-top: 10px;
+        }
+        
+        .info {
+            color: #2980b9;
+            background-color: #d6eaf8;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #2980b9;
+            margin-top: 10px;
+        }
+        
+        pre {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .console-line {
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .console-line:last-child {
+            border-bottom: none;
+        }
+        
+        .console-log {
+            color: #2c3e50;
+        }
+        
+        .console-error {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        
+        .token-status {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        
+        small {
+            display: block;
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔧 Debug API - Teste de Endpoints</h1>
+    <p class="subtitle">Ferramentas para diagnosticar problemas no carregamento de dados</p>
+    
+    <div class="section">
+        <h2>🔐 Autenticação JWT</h2>
+        <div class="input-group">
+            <label>Token JWT: 
+                <input type="password" id="token" placeholder="Cole aqui o access_token (senha será ocultada)">
+            </label>
+        </div>
+        <div class="input-group">
+            <button onclick="salvarToken()">💾 Salvar Token</button>
+            <button onclick="carregarTokenDLS()">📂 Carregar do LocalStorage</button>
+            <button onclick="limparToken()">🗑️ Limpar Token</button>
+        </div>
+        <div id="tokenStatus"></div>
+        <small>💡 Faça login em /login/ para obter um token</small>
+    </div>
+
+    <div class="section">
+        <h2>✅ Status da API (sem autenticação)</h2>
+        <p>Verifique se há dados no banco de dados</p>
+        <button onclick="testarDebug()" class="success">▶️ Testar GET /api/debug/</button>
+        <div id="debugOutput"></div>
+    </div>
+
+    <div class="section">
+        <h2>👥 Pessoas Físicas</h2>
+        <p>Requer autenticação (token JWT)</p>
+        <button onclick="testarPessoasFisicas()">▶️ Testar GET /api/pessoas-fisicas/</button>
+        <div id="pfOutput"></div>
+    </div>
+
+    <div class="section">
+        <h2>🏢 Pessoas Jurídicas</h2>
+        <p>Requer autenticação (token JWT)</p>
+        <button onclick="testarPessoasJuridicas()">▶️ Testar GET /api/pessoas-juridicas/</button>
+        <div id="pjOutput"></div>
+    </div>
+
+    <div class="section">
+        <h2>📊 Console de Diagnóstico</h2>
+        <div id="console" class="output">
+            <div class="console-line console-log">🚀 Console de debug carregado...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const consoleDiv = document.getElementById('console');
+    const MAX_LINES = 100;
+
+    function addLog(message, type = 'log') {
+        const line = document.createElement('div');
+        line.className = `console-line console-${type}`;
+        
+        const timestamp = new Date().toLocaleTimeString();
+        line.innerHTML = `[${timestamp}] ${escapeHtml(message)}`;
+        
+        consoleDiv.appendChild(line);
+        
+        // Manter apenas as últimas MAX_LINES linhas
+        while (consoleDiv.children.length > MAX_LINES) {
+            consoleDiv.removeChild(consoleDiv.firstChild);
+        }
+        
+        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Interceptar console.log e console.error
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    console.log = function(...args) {
+        originalLog(...args);
+        addLog(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), 'log');
+    };
+
+    console.error = function(...args) {
+        originalError(...args);
+        addLog(args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' '), 'error');
+    };
+
+    function salvarToken() {
+        const token = document.getElementById('token').value.trim();
+        if (token) {
+            localStorage.setItem('access_token', token);
+            atualizarStatusToken();
+            addLog('✅ Token salvo no localStorage!', 'log');
+        } else {
+            addLog('❌ Token vazio! Não é possível salvar.', 'error');
+        }
+    }
+
+    function carregarTokenDLS() {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            document.getElementById('token').value = token;
+            atualizarStatusToken();
+            addLog('✅ Token carregado do localStorage!', 'log');
+        } else {
+            addLog('❌ Nenhum token no localStorage!', 'error');
+        }
+    }
+
+    function limparToken() {
+        localStorage.removeItem('access_token');
+        document.getElementById('token').value = '';
+        atualizarStatusToken();
+        addLog('🗑️ Token removido', 'log');
+    }
+
+    function atualizarStatusToken() {
+        const token = localStorage.getItem('access_token');
+        const status = document.getElementById('tokenStatus');
+        if (token) {
+            const preview = token.substring(0, 20) + '...' + token.substring(token.length - 10);
+            status.innerHTML = `<div class="success">✅ Token presente<br><small>Preview: ${preview}</small></div>`;
+        } else {
+            status.innerHTML = `<div class="warning">⚠️ Nenhum token armazenado<br><small>Faça login ou adicione um token manualmente</small></div>`;
+        }
+    }
+
+    async function testarAPI(endpoint, outputDivId) {
+        const outputDiv = document.getElementById(outputDivId);
+        
+        addLog(`📡 Testando: ${endpoint}`, 'log');
+        
+        try {
+            const token = localStorage.getItem('access_token');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+                addLog(`🔐 Token presente: ${token.substring(0, 20)}...`, 'log');
+            } else {
+                addLog(`⚠️ Nenhum token (endpoint pode rejeitar)`, 'log');
+            }
+
+            addLog(`📤 Enviando requisição...`, 'log');
+            const response = await fetch(endpoint, { headers });
+
+            addLog(`📥 Status: ${response.status} ${response.statusText}`, 'log');
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                addLog(`❌ Erro HTTP ${response.status}`, 'error');
+                outputDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Erro ${response.status}: ${response.statusText}</strong>
+                        <pre>${escapeHtml(errorText.substring(0, 1000))}</pre>
+                    </div>
+                `;
+                return;
+            }
+
+            const data = await response.json();
+            addLog(`✅ Dados recebidos com sucesso`, 'log');
+
+            // Formatação bonita do JSON
+            const jsonStr = JSON.stringify(data, null, 2);
+            outputDiv.innerHTML = `
+                <div class="success">
+                    <strong>✅ Sucesso!</strong>
+                    <pre>${escapeHtml(jsonStr.substring(0, 2000))}</pre>
+                </div>
+            `;
+        } catch (error) {
+            addLog(`❌ Erro: ${error.message}`, 'error');
+            outputDiv.innerHTML = `
+                <div class="error">
+                    <strong>❌ Erro:</strong>
+                    <pre>${escapeHtml(error.message)}\n${escapeHtml(error.stack)}</pre>
+                </div>
+            `;
+        }
+    }
+
+    function testarDebug() {
+        testarAPI('/api/debug/', 'debugOutput');
+    }
+
+    function testarPessoasFisicas() {
+        testarAPI('/api/pessoas-fisicas/', 'pfOutput');
+    }
+
+    function testarPessoasJuridicas() {
+        testarAPI('/api/pessoas-juridicas/', 'pjOutput');
+    }
+
+    // Inicializar
+    window.addEventListener('load', () => {
+        addLog('🚀 Página de debug carregada com sucesso!', 'log');
+        atualizarStatusToken();
+    });
+</script>
+</body>
+</html>

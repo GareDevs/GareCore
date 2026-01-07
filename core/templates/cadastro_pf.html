@@ -1,9 +1,9 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Cadastro - Pessoa Jurídica{% endblock %}
+{% block title %}Cadastro - Pessoa Física{% endblock %}
 
 {% block content %}
-<div id="cadastro-pf" class="section" data-load-function="loadFormPessoaFisica">
+<div id="cadastro-pf">
     <div class="row">
         <div class="col-12">
             <h2><i class="fas fa-user-plus me-2"></i> Cadastro de Pessoa Física</h2>
@@ -14,9 +14,196 @@
             <div class="card">
                 <div class="card-body">
                     <form id="form-pessoa-fisica">
-                        <!-- Todo o formulário gerado pelo forms.js -->
-                        <div id="form-container-pf"></div>
-                        <button type="submit" class="btn btn-success mt-3">Salvar Pessoa Física</button>
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <label for="pf-goa" class="form-label">GOA</label>
+                                <input type="text" class="form-control" id="pf-goa" placeholder="Digite qualquer código GOA">
+                                <div class="form-text">
+                                    <small class="text-success">Campo livre - Digite qualquer código</small>
+                                    <div id="pf-goa-status" class="mt-1"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pf-nome" class="form-label">Nome Completo *</label>
+                                <input type="text" class="form-control" id="pf-nome" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="pf-cpf" class="form-label">CPF *</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="pf-cpf" required maxlength="14" placeholder="000.000.000-00">
+                                    <button class="btn btn-outline-success btn-sm" type="button" onclick="gerarCPFParaFormulario('pf-cpf')" title="Gerar CPF válido">
+                                        <i class="fas fa-magic"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Clique no botão para gerar um CPF válido</small>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="pf-rg" class="form-label">RG</label>
+                                <input type="text" class="form-control" id="pf-rg">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-nascimento" class="form-label">Data de Nascimento</label>
+                                <input type="date" class="form-control" id="pf-nascimento">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-mae" class="form-label">Nome da Mãe</label>
+                                <input type="text" class="form-control" id="pf-mae">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-pai" class="form-label">Nome do Pai</label>
+                                <input type="text" class="form-control" id="pf-pai">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-naturalidade" class="form-label">Naturalidade</label>
+                                <input type="text" class="form-control" id="pf-naturalidade" placeholder="Cidade, UF">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-sexo" class="form-label">Sexo</label>
+                                <select class="form-select" id="pf-sexo">
+                                    <option value="">Selecione...</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Feminino">Feminino</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-estado-civil" class="form-label">Estado Civil</label>
+                                <select class="form-select" id="pf-estado-civil">
+                                    <option value="">Selecione...</option>
+                                    <option value="Solteiro(a)">Solteiro(a)</option>
+                                    <option value="Casado(a)">Casado(a)</option>
+                                    <option value="Divorciado(a)">Divorciado(a)</option>
+                                    <option value="Viúvo(a)">Viúvo(a)</option>
+                                    <option value="União Estável">União Estável</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-telefone1" class="form-label">Telefone 1</label>
+                                <input type="text" class="form-control" id="pf-telefone1" placeholder="(00) 00000-0000">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pf-telefone2" class="form-label">Telefone 2</label>
+                                <input type="text" class="form-control" id="pf-telefone2" placeholder="(00) 00000-0000">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pf-ocupacao" class="form-label">Ocupação</label>
+                                <input type="text" class="form-control" id="pf-ocupacao">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pf-vinculo" class="form-label">Vínculo</label>
+                                <input type="text" class="form-control" id="pf-vinculo">
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Filhos</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-filho1-nome" placeholder="Nome do filho 1">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-filho1-cpf" placeholder="CPF do filho 1" maxlength="14">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-filho2-nome" placeholder="Nome do filho 2">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-filho2-cpf" placeholder="CPF do filho 2" maxlength="14">
+                            </div>
+                        </div>
+                        
+
+                        <h5 class="mt-4 mb-3">Irmãos</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-irmao1-nome" placeholder="Nome do irmão 1">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-irmao1-cpf" placeholder="CPF do irmão 1" maxlength="14">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-irmao2-nome" placeholder="Nome do irmão 2">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input type="text" class="form-control" id="pf-irmao2-cpf" placeholder="CPF do irmão 2" maxlength="14">
+                            </div>
+                        </div>
+                        
+
+                        <h5 class="mt-4 mb-3">Endereços</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" id="pf-endereco1" placeholder="Endereço 1">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" id="pf-endereco2" placeholder="Endereço 2">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" id="pf-endereco3" placeholder="Endereço 3">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input type="text" class="form-control" id="pf-endereco4" placeholder="Endereço 4">
+                            </div>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">Informações Veiculares</h5>
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pf-possui-veiculos">
+                                    <label class="form-check-label" for="pf-possui-veiculos">
+                                        Possui Veículos
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <input type="text" class="form-control" id="pf-placa" placeholder="ABC1234">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <input type="text" class="form-control" id="pf-marca-modelo" placeholder="Marca/Modelo">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <input type="number" class="form-control" id="pf-ano" placeholder="Ano" min="1900" max="2030">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <input type="text" class="form-control" id="pf-cor" placeholder="Cor">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="pf-observacoes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="pf-observacoes" rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>Salvar
+                                </button>
+                                <button type="button" class="btn btn-secondary me-2" onclick="clearFormPF()">
+                                    <i class="fas fa-times me-1"></i>Limpar
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="showSection('listar-pf')">
+                                    <i class="fas fa-list me-1"></i>Ver Lista
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -26,20 +213,133 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'core/js/utils-forms.js' %}"></script>
 <script>
+    // Variável global para controlar edição
+    let editingRecord = null;
+
     document.addEventListener('DOMContentLoaded', () => {
-        // Carregar formulário se ainda não foi carregado
-        if (!document.getElementById('form-container-pf')?.children.length) {
-            loadFormPessoaFisica();
-        }
+        console.log('📄 Página Cadastro PF carregada');
         
+        // Aplicar máscaras
+        applyMasks();
+        
+        // Configurar submit do formulário
         const form = document.getElementById('form-pessoa-fisica');
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 salvarPessoaFisica();
             });
         }
     });
+    
+    function salvarPessoaFisica() {
+        try {
+            const goa = document.getElementById('pf-goa').value.trim();
+            
+            const formData = {
+                goa: goa,
+                nome: document.getElementById('pf-nome').value.trim(),
+                cpf: document.getElementById('pf-cpf').value.replace(/\D/g, ''),
+                rg: document.getElementById('pf-rg').value.trim(),
+                nascimento: document.getElementById('pf-nascimento').value,
+                mae: document.getElementById('pf-mae').value.trim(),
+                pai: document.getElementById('pf-pai').value.trim(),
+                filhos: {
+                    filho1: {
+                        nome: document.getElementById('pf-filho1-nome').value.trim(),
+                        cpf: document.getElementById('pf-filho1-cpf').value.replace(/\D/g, '')
+                    },
+                    filho2: {
+                        nome: document.getElementById('pf-filho2-nome').value.trim(),
+                        cpf: document.getElementById('pf-filho2-cpf').value.replace(/\D/g, '')
+                    }
+                },
+                irmaos: {
+                    irmao1: {
+                        nome: document.getElementById('pf-irmao1-nome').value.trim(),
+                        cpf: document.getElementById('pf-irmao1-cpf').value.replace(/\D/g, '')
+                    },
+                    irmao2: {
+                        nome: document.getElementById('pf-irmao2-nome').value.trim(),
+                        cpf: document.getElementById('pf-irmao2-cpf').value.replace(/\D/g, '')
+                    }
+                },
+                naturalidade: document.getElementById('pf-naturalidade').value.trim(),
+                sexo: document.getElementById('pf-sexo').value,
+                estado_civil: document.getElementById('pf-estado-civil').value,
+                telefone1: document.getElementById('pf-telefone1').value.trim(),
+                telefone2: document.getElementById('pf-telefone2').value.trim(),
+                ocupacao: document.getElementById('pf-ocupacao').value.trim(),
+                vinculo: document.getElementById('pf-vinculo').value.trim(),
+                endereco1: document.getElementById('pf-endereco1').value.trim(),
+                endereco2: document.getElementById('pf-endereco2').value.trim(),
+                endereco3: document.getElementById('pf-endereco3').value.trim(),
+                endereco4: document.getElementById('pf-endereco4').value.trim(),
+                possui_veiculos: document.getElementById('pf-possui-veiculos').checked,
+                placa: document.getElementById('pf-placa').value.trim(),
+                marca_modelo: document.getElementById('pf-marca-modelo').value.trim(),
+                ano: parseInt(document.getElementById('pf-ano').value) || null,
+                cor: document.getElementById('pf-cor').value.trim(),
+                observacoes: document.getElementById('pf-observacoes').value.trim()
+            };
+
+            // Validar dados mínimos
+            if (!formData.nome) {
+                showNotification('❌ Preencha o nome completo!', 'warning');
+                return;
+            }
+
+            if (formData.cpf && formData.cpf.length !== 11) {
+                showNotification('❌ CPF deve ter 11 dígitos!', 'error');
+                return;
+            }
+
+            if (formData.cpf && !validarCPF(formData.cpf)) {
+                showNotification('❌ CPF inválido!', 'error');
+                return;
+            }
+
+            console.log('💾 Enviando dados da PF:', formData);
+
+            const method = editingRecord ? 'PATCH' : 'POST';
+            const url = editingRecord 
+                ? `/api/pessoas-fisicas/${editingRecord.id}/`
+                : '/api/pessoas-fisicas/';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const msg = editingRecord 
+                    ? 'Pessoa Física atualizada com sucesso!' 
+                    : 'Pessoa Física cadastrada com sucesso!';
+                showNotification('✅ ' + msg, 'success');
+                clearFormPF();
+                editingRecord = null;
+                setTimeout(() => showSection('listar-pf'), 1500);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showNotification('❌ Erro: ' + (error.message || 'Verifique os dados'), 'error');
+            });
+
+        } catch (error) {
+            console.error('Erro ao processar formulário:', error);
+            showNotification('❌ Erro ao processar formulário', 'error');
+        }
+    }
 </script>
 {% endblock %}

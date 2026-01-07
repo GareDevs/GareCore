@@ -392,20 +392,18 @@ function loadGaleriaFotos() {
 }
 
 // Obter informações da pessoa
-function getPessoaInfo(pessoaId, tipoPessoa) {
+async function getPessoaInfo(pessoaId, tipoPessoa) {
     try {
-        const table = tipoPessoa === 'fisica' ? 'pessoa_fisica' : 'pessoa_juridica';
-        const pessoa = db.getById(table, pessoaId);
-        
-        if (!pessoa) return { nome: 'Pessoa não encontrada', documento: '-' };
-        
+        let pessoa;
         if (tipoPessoa === 'fisica') {
+            pessoa = await api.get(`/pessoas-fisicas/${pessoaId}/`);
             return {
                 nome: pessoa.nome,
                 documento: formatUtils.formatCPF(pessoa.cpf),
                 tipo: 'Pessoa Física'
             };
         } else {
+            pessoa = await api.get(`/pessoas-juridicas/${pessoaId}/`);
             return {
                 nome: pessoa.razao_social,
                 documento: formatUtils.formatCNPJ(pessoa.cnpj),
@@ -600,9 +598,9 @@ function downloadImagem(base64Data, nomeArquivo) {
 }
 
 // Editar foto
-function editarFoto(fotoId) {
+async function editarFoto(fotoId) {
     try {
-        const foto = db.getById('fotos', fotoId);
+        const foto = await api.get(`/fotos/${fotoId}/`);
         if (!foto) {
             showNotification('Foto não encontrada', 'error');
             return;
@@ -658,9 +656,9 @@ function excluirFoto(fotoId) {
 }
 
 // Buscar fotos por pessoa
-function buscarFotosPorPessoa(pessoaId, tipoPessoa) {
+async function buscarFotosPorPessoa(pessoaId, tipoPessoa) {
     try {
-        const fotos = db.getFotosPessoa(pessoaId, tipoPessoa);
+        const fotos = await api.get(`/fotos/?pessoa_id=${pessoaId}&tipo_pessoa=${tipoPessoa}`);
         return fotos;
     } catch (error) {
         console.error('Erro ao buscar fotos da pessoa:', error);
@@ -688,20 +686,21 @@ function filtrarFotos(filtro) {
 }
 
 // Exportar fotos (criar lista com URLs)
-function exportarListaFotos() {
+async function exportarListaFotos() {
     try {
-        const fotos = db.getAll('fotos');
+        const fotos = await api.get('/fotos/');
         let lista = 'LISTA DE FOTOS\n';
         lista += '================\n\n';
 
-        fotos.forEach((foto, index) => {
-            const pessoa = getPessoaInfo(foto.pessoa_id, foto.tipo_pessoa);
+        for (let index = 0; index < fotos.length; index++) {
+            const foto = fotos[index];
+            const pessoa = await getPessoaInfo(foto.pessoa_id, foto.tipo_pessoa);
             lista += `${index + 1}. ${pessoa.nome} (${pessoa.tipo})\n`;
             lista += `   Documento: ${pessoa.documento}\n`;
             lista += `   URL: ${foto.url_foto}\n`;
             lista += `   Descrição: ${foto.descricao || 'Sem descrição'}\n`;
             lista += `   Data: ${formatUtils.formatDateTime(foto.data_upload)}\n\n`;
-        });
+        }
 
         // Criar arquivo para download
         const blob = new Blob([lista], { type: 'text/plain;charset=utf-8' });
@@ -724,9 +723,9 @@ function exportarListaFotos() {
 }
 
 // Estatísticas de fotos
-function getEstatisticasFotos() {
+async function getEstatisticasFotos() {
     try {
-        const fotos = db.getAll('fotos');
+        const fotos = await api.get('/fotos/');
         const stats = {
             total: fotos.length,
             pessoa_fisica: fotos.filter(f => f.tipo_pessoa === 'fisica').length,
@@ -953,9 +952,9 @@ function criarModalVisualizacaoFoto(foto, pessoa) {
 }
 
 // Buscar todas as fotos de uma pessoa
-function buscarFotosDaPessoa(pessoaId, tipoPessoa) {
+async function buscarFotosDaPessoa(pessoaId, tipoPessoa) {
     try {
-        const todasFotos = db.getAll('fotos');
+        const todasFotos = await api.get('/fotos/');
         return todasFotos.filter(foto => 
             foto.pessoa_id === pessoaId && foto.tipo_pessoa === tipoPessoa
         ).sort((a, b) => new Date(b.data_upload) - new Date(a.data_upload));

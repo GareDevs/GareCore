@@ -1,8 +1,9 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Lista - Pessoas Jurídicas{% endblock %}
 
 {% block content %}
-<div id="listar-pj" class="section" data-load-function="loadListaPessoasJuridicas">
+<div id="listar-pj">
     <div class="row">
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h2><i class="fas fa-building me-2"></i> Pessoas Jurídicas</h2>
@@ -21,7 +22,14 @@
                                placeholder="Buscar por razão social, CNPJ, nome fantasia, GOA...">
                     </div>
 
-                    <div class="table-responsive">
+                    <div id="carregando-pj" class="text-center">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p class="mt-2">Carregando pessoas jurídicas...</p>
+                    </div>
+
+                    <div class="table-responsive" id="tabela-container-pj" style="display: none;">
                         <table class="table table-hover">
                             <thead class="table-success">
                                 <tr>
@@ -35,9 +43,13 @@
                                 </tr>
                             </thead>
                             <tbody id="tabela-pj">
-                                <!-- Preenchido via JS -->
+                                <!-- Preenchido via API -->
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="text-center mt-4" id="sem-resultados-pj" style="display:none;">
+                        <p class="text-muted">Nenhuma pessoa jurídica encontrada.</p>
                     </div>
                 </div>
             </div>
@@ -47,12 +59,114 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'core/js/utils-forms.js' %}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Carregar lista se ainda não foi carregada
-        if (!document.getElementById('tabela-pj')?.children.length) {
-            loadListaPessoasJuridicas();
-        }
+    const token = localStorage.getItem('access_token');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await carregarDados();
+        document.getElementById('search-pj').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') carregarDados(e.target.value.trim());
+        });
     });
+
+    async function carregarDados(filtro = '') {
+        const loading = document.getElementById('carregando-pj');
+        const tabela = document.getElementById('tabela-pj');
+        const container = document.getElementById('tabela-container-pj');
+        const vazio = document.getElementById('sem-resultados-pj');
+
+        loading.style.display = 'block';
+        container.style.display = 'none';
+        vazio.style.display = 'none';
+
+        try {
+            let url = '/api/pessoas-juridicas/';
+            if (filtro) url += `?search=${encodeURIComponent(filtro)}`;
+
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token || ''}` }
+            });
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            const pessoas = data.results || [];
+
+            tabela.innerHTML = '';
+            if (pessoas.length === 0) {
+                vazio.style.display = 'block';
+                loading.style.display = 'none';
+                return;
+            }
+
+            pessoas.forEach(p => {
+                const row = tabela.insertRow();
+                const situacao = p.situacao_cadastral === 'ATIVA' ? 
+                    '<span class="badge bg-success">Ativa</span>' : 
+                    '<span class="badge bg-warning">Inativa</span>';
+                
+                row.innerHTML = `
+                    <td>${p.razao_social || '-'}</td>
+                    <td>${p.nome_fantasia || '-'}</td>
+                    <td>${formatarCNPJ(p.cnpj || '')}</td>
+                    <td><span class="badge bg-secondary">0</span></td>
+                    <td><span class="badge bg-info">${p.goa || 'N/A'}</span></td>
+                    <td>${situacao}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="editar(${p.pessoa_id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="excluir(${p.pessoa_id})" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+            });
+
+            loading.style.display = 'none';
+            container.style.display = 'block';
+        } catch (error) {
+            loading.style.display = 'none';
+            vazio.style.display = 'block';
+            vazio.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
+        }
+    }
+
+    async function editar(id) {
+        try {
+            const response = await fetch(`/api/pessoas-juridicas/${id}/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Não encontrado');
+
+            const p = await response.json();
+            localStorage.setItem('editando_pj', JSON.stringify(p));
+            window.location.href = '{% url "cadastro_pj" %}';
+        } catch (error) {
+            showNotification('Erro: ' + error.message, 'error');
+        }
+    }
+
+    async function excluir(id) {
+        if (!confirm('Excluir esta pessoa?')) return;
+
+        try {
+            const response = await fetch(`/api/pessoas-juridicas/${id}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Erro ao excluir');
+
+            showNotification('✅ Excluído com sucesso!', 'success');
+            carregarDados();
+        } catch (error) {
+            showNotification('Erro: ' + error.message, 'error');
+        }
+    }
+
+    function exportarParaExcel() {
+        showNotification('Em desenvolvimento...', 'info');
+    }
 </script>
 {% endblock %}

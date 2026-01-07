@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from core.models import Pessoa, PessoaFisica, PessoaJuridica, Endereco
+from core.api.serializers.socio import SocioCreateUpdateSerializer
 
 
 class EnderecoSerializer(serializers.ModelSerializer):
@@ -129,16 +130,37 @@ class PessoaJuridicaDetailSerializer(serializers.ModelSerializer):
 
 
 class PessoaJuridicaCreateUpdateSerializer(serializers.ModelSerializer):
-    """Serializer para criação/atualização de PJ"""
+    """Serializer para criação/atualização de PJ com suporte a sócios"""
     goa = serializers.CharField(required=False, allow_blank=True, max_length=100)
+    
+    # Aceitar sócios como lista ou JSON
+    socios = serializers.JSONField(required=False, allow_null=True)
+    
+    # Novos campos do formulário
+    situacao = serializers.CharField(required=False, allow_blank=True, max_length=20)
+    tipo = serializers.CharField(required=False, allow_blank=True, max_length=100)
+    email = serializers.EmailField(required=False, allow_blank=True)
+    cep = serializers.CharField(required=False, allow_blank=True, max_length=9)
+    telefone1 = serializers.CharField(required=False, allow_blank=True, max_length=15)
+    telefone2 = serializers.CharField(required=False, allow_blank=True, max_length=15)
+    endereco = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    cidade = serializers.CharField(required=False, allow_blank=True, max_length=100)
+    situacao_simples_nacional = serializers.CharField(required=False, allow_blank=True, max_length=20)
+    data_situacao_cadastral = serializers.DateField(required=False, allow_null=True)
+    endereco_filial = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    cidade_filial = serializers.CharField(required=False, allow_blank=True, max_length=100)
     
     class Meta:
         model = PessoaJuridica
-        fields = ['razao_social', 'nome_fantasia', 'cnpj', 'situacao_cadastral',
-                  'data_abertura', 'data_fechamento', 'porte_empresa', 'capital_social',
-                  'cnae_principal', 'cnae_descricao', 'mei', 'optante_simples',
-                  'data_opcao_simples', 'data_exclusao_simples', 'possui_filial',
-                  'observacoes', 'goa']
+        fields = [
+            'razao_social', 'nome_fantasia', 'cnpj', 'situacao_cadastral',
+            'data_abertura', 'data_fechamento', 'porte_empresa', 'capital_social',
+            'cnae_principal', 'cnae_descricao', 'mei', 'optante_simples',
+            'data_opcao_simples', 'data_exclusao_simples', 'possui_filial',
+            'observacoes', 'goa', 'socios', 'situacao', 'tipo', 'email', 'cep',
+            'telefone1', 'telefone2', 'endereco', 'cidade', 'situacao_simples_nacional',
+            'data_situacao_cadastral', 'endereco_filial', 'cidade_filial'
+        ]
     
     def validate_cnpj(self, value):
         """Validar CNPJ"""
@@ -178,26 +200,89 @@ class PessoaJuridicaCreateUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Razão social deve ter pelo menos 3 caracteres")
         return value.strip()
     
+    def _processar_socios(self, pj, dados_socios):
+        """
+        Processa dados de sócios vindos do formulário ou planilha
+        Normaliza e cria registros em SocioEmpresa
+        
+        Args:
+            pj: Instância de PessoaJuridica
+            dados_socios: Dict ou List de dados de sócios
+        """
+        if not dados_socios:
+            return
+        
+        # Converter para lista se for dict (vindo do formulário)
+        if isinstance(dados_socios, dict):
+            lista_socios = list(dados_socios.values())
+        else:
+            lista_socios = dados_socios if isinstance(dados_socios, list) else []
+        
+        # Processar cada sócio
+        for socio_data in lista_socios:
+            if not isinstance(socio_data, dict):
+                continue
+            
+            # Mapear campos do formulário para o esperado
+            # Pode vir como 'nome' ou 'nome_socio', 'cpf' ou 'cpf_cnpj', etc
+            dados_limpos = {
+                'nome_socio': socio_data.get('nome') or socio_data.get('nome_socio', ''),
+                'cpf_cnpj': socio_data.get('cpf') or socio_data.get('cnpj') or socio_data.get('cpf_cnpj') or '',
+                'data_nascimento': socio_data.get('data_nascimento'),
+                'idade': socio_data.get('idade'),
+                'nome_mae': socio_data.get('nome_mae', ''),
+                'suspeita_obito': socio_data.get('suspeita_obito', False),
+                'qualificacao': socio_data.get('qualificacao', ''),
+                'participacao_percentual': socio_data.get('participacao_percentual'),
+                'data_entrada': socio_data.get('data_entrada'),
+            }
+            
+            # Validar e criar sócio
+            try:
+                serializer = SocioCreateUpdateSerializer(data=dados_limpos)
+                if serializer.is_valid():
+                    serializer.create_or_update_socio(pj.pessoa, serializer.validated_data)
+                else:
+                    # Log erros mas continua processando outros sócios
+                    print(f"❌ Erro ao processar sócio {dados_limpos.get('nome_socio')}: {serializer.errors}")
+            except Exception as e:
+                print(f"❌ Erro ao criar sócio: {str(e)}")
+    
     @transaction.atomic
     def create(self, validated_data):
-        """Cria pessoa jurídica"""
+        """Cria pessoa jurídica com sócios"""
         goa = validated_data.pop('goa', '')
+        socios_data = validated_data.pop('socios', None)
+        
+        # Criar pessoa genérica
         pessoa = Pessoa.objects.create(tipo='J', goa=goa or None)
+        
+        # Criar pessoa jurídica
         pj = PessoaJuridica.objects.create(pessoa=pessoa, **validated_data)
+        
+        # Processar sócios
+        self._processar_socios(pj, socios_data)
+        
         return pj
     
     @transaction.atomic
     def update(self, instance, validated_data):
-        """Atualiza pessoa jurídica"""
+        """Atualiza pessoa jurídica com sócios"""
         goa = validated_data.pop('goa', None)
+        socios_data = validated_data.pop('socios', None)
         
+        # Atualizar GOA
         if goa:
             instance.pessoa.goa = goa
             instance.pessoa.save()
         
+        # Atualizar campos
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
+        
+        # Processar sócios
+        self._processar_socios(instance, socios_data)
         
         return instance
 

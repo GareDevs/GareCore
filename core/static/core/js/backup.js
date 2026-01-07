@@ -80,6 +80,16 @@ class BackupManager {
             const dateStr = new Date().toLocaleDateString('pt-BR');
             const timeStr = new Date().toLocaleTimeString('pt-BR');
 
+            // Coletar dados do sistema via API
+            const pfRes = await api.listarPessoasFisicas();
+            const pessoasFisicas = pfRes.results || pfRes;
+            const pjRes = await api.listarPessoasJuridicas();
+            const pessoasJuridicas = pjRes.results || pjRes;
+            const fotosRes = await api.listarFotos();
+            const fotos = fotosRes.results || fotosRes;
+            const relRes = await api.listarRelacionamentos();
+            const relacionamentos = relRes.results || relRes;
+
             // Coletar todos os dados do sistema
             const backupData = {
                 metadata: {
@@ -92,10 +102,10 @@ class BackupManager {
                     hostname: window.location.hostname
                 },
                 data: {
-                    pessoa_fisica: this.getTableData('pessoa_fisica'),
-                    pessoa_juridica: this.getTableData('pessoa_juridica'),
-                    fotos: this.getTableData('fotos'),
-                    relacionamentos: this.getTableData('relacionamentos')
+                    pessoa_fisica: pessoasFisicas,
+                    pessoa_juridica: pessoasJuridicas,
+                    fotos: fotos,
+                    relacionamentos: relacionamentos
                 },
                 settings: {
                     theme: localStorage.getItem('theme'),
@@ -104,10 +114,10 @@ class BackupManager {
                     last_login: localStorage.getItem('last_login')
                 },
                 statistics: {
-                    total_pessoas_fisicas: this.getTableData('pessoa_fisica').length,
-                    total_pessoas_juridicas: this.getTableData('pessoa_juridica').length,
-                    total_fotos: this.getTableData('fotos').length,
-                    total_relacionamentos: this.getTableData('relacionamentos').length,
+                    total_pessoas_fisicas: pessoasFisicas.length,
+                    total_pessoas_juridicas: pessoasJuridicas.length,
+                    total_fotos: fotos.length,
+                    total_relacionamentos: relacionamentos.length,
                     backup_size_bytes: 0 // Será calculado abaixo
                 }
             };
@@ -150,12 +160,20 @@ class BackupManager {
 
     getTableData(tableName) {
         try {
-            if (typeof db !== 'undefined' && db.getAll) {
-                return db.getAll(tableName) || [];
-            } else {
-                // Fallback: ler diretamente do localStorage
-                const data = JSON.parse(localStorage.getItem('local_database_data') || '{}');
-                return data[tableName] || [];
+            // Use API client to fetch current data instead of db object
+            // This ensures we get fresh data from the server
+            switch(tableName) {
+                case 'pessoa_fisica':
+                    // Will be called from async context with await
+                    return 'use_api_listarPessoasFisicas';
+                case 'pessoa_juridica':
+                    return 'use_api_listarPessoasJuridicas';
+                case 'relacionamentos':
+                    return 'use_api_listarRelacionamentos';
+                case 'fotos':
+                    return 'use_api_listarFotos';
+                default:
+                    return [];
             }
         } catch (error) {
             console.warn(`⚠️ Erro ao obter dados da tabela ${tableName}:`, error);
@@ -217,15 +235,48 @@ class BackupManager {
 
             console.log('🔄 Restaurando backup:', backupId);
 
-            // Restaurar dados das tabelas
-            if (typeof db !== 'undefined' && db.data) {
-                // Usar o objeto db se disponível
-                db.data.pessoa_fisica = backupData.data.pessoa_fisica || [];
-                db.data.pessoa_juridica = backupData.data.pessoa_juridica || [];
-                db.data.fotos = backupData.data.fotos || [];
-                db.data.relacionamentos = backupData.data.relacionamentos || [];
-                db.saveToStorage();
-            } else {
+            // Restaurar dados das tabelas via API
+            try {
+                // Restaurar pessoas físicas
+                for (const pessoa of backupData.data.pessoa_fisica) {
+                    const existing = await api.obterPessoaFisica(pessoa.id).catch(() => null);
+                    if (existing) {
+                        await api.atualizarPessoaFisica(pessoa.id, pessoa);
+                    } else {
+                        await api.criarPessoaFisica(pessoa);
+                    }
+                }
+
+                // Restaurar pessoas jurídicas
+                for (const empresa of backupData.data.pessoa_juridica) {
+                    const existing = await api.obterPessoaJuridica(empresa.id).catch(() => null);
+                    if (existing) {
+                        await api.atualizarPessoaJuridica(empresa.id, empresa);
+                    } else {
+                        await api.criarPessoaJuridica(empresa);
+                    }
+                }
+
+                // Restaurar relacionamentos
+                for (const rel of backupData.data.relacionamentos) {
+                    try {
+                        await api.criarRelacionamento(rel);
+                    } catch (error) {
+                        // Se já existe, prosseguir
+                        console.warn('⚠️ Relacionamento já existe ou erro ao restaurar:', rel);
+                    }
+                }
+
+                // Restaurar fotos
+                for (const foto of backupData.data.fotos) {
+                    try {
+                        await api.criarFoto(foto);
+                    } catch (error) {
+                        console.warn('⚠️ Foto já existe ou erro ao restaurar:', foto);
+                    }
+                }
+            } catch (error) {
+                console.error('⚠️ Erro ao restaurar via API, tentando fallback:', error);
                 // Fallback: salvar diretamente no localStorage
                 const currentData = {
                     pessoa_fisica: backupData.data.pessoa_fisica || [],

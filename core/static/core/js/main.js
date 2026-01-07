@@ -11,48 +11,41 @@ let editingRecord = null;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Aplicação Desktop iniciada');
     
-    // Carregar qualquer seção que já esteja visível (para acesso direto via URL)
-    loadVisibleSections();
-    
-    // Carregar dashboard inicial (se não estiver em outra página)
-    const currentVisibleSection = document.querySelector('.section:not([style*="display: none"])');
-    if (!currentVisibleSection || currentVisibleSection.id === 'dashboard') {
-        loadDashboard();
+    try {
+        // Carregar qualquer seção que já esteja visível (para acesso direto via URL)
+        loadVisibleSections();
+        
+        // Configurar eventos
+        setupEventListeners();
+        
+        // Carregar dados iniciais
+        loadInitialData();
+        
+        // Mostrar seção inicial
+        showSection('dashboard');
+        
+        // Carregar dashboard após um pequeno delay para garantir que tudo está pronto
+        setTimeout(() => {
+            try {
+                if (typeof loadDashboard === 'function') {
+                    loadDashboard();
+                }
+            } catch (err) {
+                console.warn('⚠️ Erro ao carregar dashboard no setTimeout:', err);
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('❌ Erro fatal na inicialização:', error);
     }
-    
-    // Configurar eventos
-    setupEventListeners();
-    
-    // Carregar dados iniciais
-    loadInitialData();
-    
-    // Mostrar seção inicial
-    showSection('dashboard');
 });
 
 // Carregar qualquer seção que esteja visível (para URLs diretas)
 function loadVisibleSections() {
     console.log('🔄 Verificando seções visíveis...');
-    document.querySelectorAll('.section[data-load-function]').forEach(section => {
-        // Verifica se a seção está visível (não tem display none inline ou do CSS)
-        const isVisible = section.offsetParent !== null;
-        if (isVisible) {
-            const funcName = section.getAttribute('data-load-function');
-            const sectionId = section.id;
-            console.log(`📍 Seção visível encontrada: ${sectionId}, chamando: ${funcName}`);
-            
-            if (typeof window[funcName] === 'function') {
-                try {
-                    window[funcName]();
-                    console.log(`✅ ${funcName} chamada com sucesso`);
-                } catch (error) {
-                    console.error(`❌ Erro ao chamar ${funcName}:`, error);
-                }
-            } else {
-                console.error(`❌ Função ${funcName} não encontrada`);
-            }
-        }
-    });
+    // HTML está estático agora, apenas aplicar máscaras
+    applyMasks();
+    console.log('✅ Seções carregadas (HTML estático)');
 }
 
 // Configurar event listeners
@@ -193,30 +186,51 @@ function updateActiveNavigation(sectionName) {
     }
 }
 
+// Mostrar uma seção específica
+function showSection(sectionName) {
+    console.log(`📑 Navegando para seção: ${sectionName}`);
+    
+    try {
+        // Esconder todas as seções
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+            console.log(`🚫 Seção ${section.id} ocultada`);
+        });
+        
+        // Mostrar apenas a seção desejada
+        const targetSection = document.getElementById(sectionName);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            console.log(`✅ Seção ${sectionName} exibida`);
+        } else {
+            console.warn(`⚠️ Seção ${sectionName} não encontrada no DOM`);
+        }
+        
+        // Atualizar navegação ativa
+        updateActiveNavigation(sectionName);
+        
+        // Carregar dados da seção
+        loadSectionData(sectionName);
+        
+        // Atualizar estado global
+        currentSection = sectionName;
+        
+        // Scroll para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        console.log(`✅ Seção ${sectionName} carregada`);
+    } catch (error) {
+        console.error(`❌ Erro ao mostrar seção ${sectionName}:`, error);
+        showNotification(`Erro ao carregar seção`, 'error');
+    }
+}
+
 // Carregar dados específicos da seção
 function loadSectionData(sectionName) {
     console.log(`🔄 loadSectionData chamada para: ${sectionName}`);
     
-    // Primeiro tenta usar o atributo data-load-function
-    const section = document.getElementById(sectionName);
-    if (section && section.hasAttribute('data-load-function')) {
-        const funcName = section.getAttribute('data-load-function');
-        console.log(`📍 Chamando função: ${funcName}`);
-        
-        if (typeof window[funcName] === 'function') {
-            try {
-                window[funcName]();
-                console.log(`✅ ${funcName} chamada com sucesso`);
-                return;
-            } catch (error) {
-                console.error(`❌ Erro ao chamar ${funcName}:`, error);
-            }
-        } else {
-            console.error(`❌ Função ${funcName} não encontrada`);
-        }
-    }
-    
-    // Fallback para switch anterior (compatibilidade)
+    // Agora todos os formulários já estão no HTML estático
+    // Apenas inicializar máscaras e listeners
     switch(sectionName) {
         case 'dashboard':
             console.log('📊 Carregando dashboard...');
@@ -275,35 +289,60 @@ function animateCounter(elementId, finalValue, duration = 1000) {
     }, 16);
 }
 
-// Carregar dashboard principal
-function loadMainDashboard() {
+// Carregar estatísticas do dashboard
+async function loadDashboardStatistics() {
     try {
-        const totalPF = db.count('pessoa_fisica');
-        const totalPJ = db.count('pessoa_juridica');
-        const totalFotos = db.count('fotos');
-        const totalRelacionamentos = db.count('relacionamentos');
+        console.log('🔄 Carregando estatísticas do dashboard...');
+        
+        // Chamar novo endpoint de dashboard
+        const response = await api.get('/dashboard/statistics/');
+        
+        if (response && response.success) {
+            const data = response.data;
+            const totalPF = data.pessoas_fisicas || 0;
+            const totalPJ = data.pessoas_juridicas || 0;
+            const totalFotos = data.fotos || 0;
+            const totalRelacionamentos = data.relacionamentos || 0;
 
-        // Animar contadores
-        animateCounter('total-pf', totalPF, 800);
-        animateCounter('total-pj', totalPJ, 1000);
-        animateCounter('total-fotos', totalFotos, 1200);
-        animateCounter('total-relacionamentos', totalRelacionamentos, 1400);
+            // Animar contadores
+            animateCounter('total-pf', totalPF, 800);
+            animateCounter('total-pj', totalPJ, 1000);
+            animateCounter('total-fotos', totalFotos, 1200);
+            animateCounter('total-relacionamentos', totalRelacionamentos, 1400);
+            
+            // Atualizar labels com plural/singular correto
+            setTimeout(() => {
+                const labelPf = document.getElementById('label-pf');
+                const labelPj = document.getElementById('label-pj');
+                const labelFotos = document.getElementById('label-fotos');
+                const labelRel = document.getElementById('label-relacionamentos');
+                
+                if (labelPf) labelPf.textContent = totalPF === 1 ? 'cadastrada' : 'cadastradas';
+                if (labelPj) labelPj.textContent = totalPJ === 1 ? 'cadastrada' : 'cadastradas';
+                if (labelFotos) labelFotos.textContent = totalFotos === 1 ? 'arquivo' : 'arquivos';
+                if (labelRel) labelRel.textContent = totalRelacionamentos === 1 ? 'vínculo' : 'vínculos';
+            }, 500);
+            
+            console.log(`✅ Estatísticas carregadas: ${totalPF} PF, ${totalPJ} PJ, ${totalFotos} fotos, ${totalRelacionamentos} vínculos`);
+            
+            return { totalPF, totalPJ, totalFotos, totalRelacionamentos };
+        } else {
+            throw new Error(response?.error || 'Erro ao carregar estatísticas');
+        }
+    } catch (error) {
+        console.error('❌ Erro ao carregar estatísticas do dashboard:', error);
+        showNotification('Erro ao carregar estatísticas do dashboard', 'error');
+    }
+}
+
+// Carregar dashboard principal
+async function loadMainDashboard() {
+    try {
+        // Carregar estatísticas usando novo endpoint
+        const stats = await loadDashboardStatistics();
         
-        // Atualizar labels com plural/singular correto
-        setTimeout(() => {
-            document.getElementById('label-pf').textContent = totalPF === 1 ? 'cadastrada' : 'cadastradas';
-            document.getElementById('label-pj').textContent = totalPJ === 1 ? 'cadastrada' : 'cadastradas';
-            document.getElementById('label-fotos').textContent = totalFotos === 1 ? 'arquivo' : 'arquivos';
-            document.getElementById('label-relacionamentos').textContent = totalRelacionamentos === 1 ? 'vínculo' : 'vínculos';
-        }, 500);
-        
-        console.log(`📊 Dashboard atualizado: ${totalPF} PF, ${totalPJ} PJ, ${totalFotos} fotos, ${totalRelacionamentos} vínculos`);
-        console.log(`🎯 Elementos encontrados:`, {
-            'total-pf': !!document.getElementById('total-pf'),
-            'total-pj': !!document.getElementById('total-pj'),
-            'total-fotos': !!document.getElementById('total-fotos'),
-            'total-relacionamentos': !!document.getElementById('total-relacionamentos')
-        });
+        const totalPF = stats?.totalPF || 0;
+        const totalPJ = stats?.totalPJ || 0;
         
         // Carregar pessoas recentes com fotos
         loadRecentPeopleWithPhotos();
@@ -364,17 +403,17 @@ function updateBackupStatus() {
 }
 
 // Carregar pessoas recentes com fotos para o dashboard
-function loadRecentPeopleWithPhotos() {
+async function loadRecentPeopleWithPhotos() {
     try {
         const container = document.getElementById('recent-people-container');
         const countEl = document.getElementById('recent-count');
         
         if (!container) return;
         
-        // Buscar pessoas físicas e jurídicas mais recentes
-        const pessoasFisicas = db.getAll('pessoa_fisica').slice(-6); // últimas 6
-        const pessoasJuridicas = db.getAll('pessoa_juridica').slice(-4); // últimas 4
-        const todasFotos = db.getAll('fotos');
+        // Buscar pessoas físicas e jurídicas mais recentes via API
+        const pessoasFisicas = (await api.get('/pessoas-fisicas/?ordering=-created_at')).slice(0, 6);
+        const pessoasJuridicas = (await api.get('/pessoas-juridicas/?ordering=-created_at')).slice(0, 4);
+        const todasFotos = await api.get('/fotos/');
         
         const todasPessoas = [];
         
@@ -486,18 +525,20 @@ function loadRecentPeopleWithPhotos() {
 }
 
 // Carregar dados iniciais
-function loadInitialData() {
+async function loadInitialData() {
     // Verificar se há dados de exemplo para inserir
-    if (db.count('pessoa_fisica') === 0 && db.count('pessoa_juridica') === 0) {
-        insertSampleData();
+    const countPF = (await api.contarPessoasFisicas()).total || 0;
+    const countPJ = (await api.contarPessoasJuridicas()).total || 0;
+    if (countPF === 0 && countPJ === 0) {
+        await insertSampleData();
     }
 }
 
 // Inserir dados de exemplo
-function insertSampleData() {
+async function insertSampleData() {
     try {
         // Exemplo de pessoa física
-        db.insert('pessoa_fisica', {
+        await api.post('/pessoas-fisicas/', {
             goa: 'GOAINV001',
             nome: 'João Silva Santos',
             cpf: '12345678901',
@@ -526,7 +567,7 @@ function insertSampleData() {
         });
 
         // Exemplo de pessoa jurídica
-        db.insert('pessoa_juridica', {
+        await api.post('/pessoas-juridicas/', {
             goa: 'GOACOM001',
             razao_social: 'Tech Solutions Ltda',
             nome_fantasia: 'TechSol',
@@ -546,7 +587,7 @@ function insertSampleData() {
         });
 
         // Adicionar mais exemplos para demonstrar relacionamentos
-        db.insert('pessoa_fisica', {
+        await api.post('/pessoas-fisicas/', {
             goa: 'GOAFAM002',
             nome: 'Maria Silva Santos',
             cpf: '98765432100',
@@ -565,7 +606,7 @@ function insertSampleData() {
             participacao_empresa: '50%'
         });
         
-        db.insert('pessoa_fisica', {
+        await api.post('/pessoas-fisicas/', {
             goa: 'GOADEN003', 
             nome: 'Carlos Silva Santos',
             cpf: '11122233344',
@@ -632,9 +673,23 @@ function updateStatusBar(message) {
 }
 
 // Função para download de backup
-function downloadBackup() {
+async function downloadBackup() {
     try {
-        const data = db.exportData();
+        // Buscar todos os dados via API
+        const [pessoasFisicas, pessoasJuridicas, fotos, relacionamentos] = await Promise.all([
+            api.get('/pessoas-fisicas/'),
+            api.get('/pessoas-juridicas/'),
+            api.get('/fotos/'),
+            api.get('/relacionamentos/')
+        ]);
+        
+        const data = JSON.stringify({
+            pessoasFisicas,
+            pessoasJuridicas,
+            fotos,
+            relacionamentos
+        }, null, 2);
+        
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         
@@ -654,18 +709,37 @@ function downloadBackup() {
 }
 
 // Função para importar backup
-function importBackup(file) {
+async function importBackup(file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
         try {
-            const success = db.importData(e.target.result);
-            if (success) {
-                showNotification('Backup importado com sucesso!', 'success');
-                loadDashboard();
-                loadSectionData(currentSection);
-            } else {
-                showNotification('Erro ao importar backup', 'error');
+            const data = JSON.parse(e.target.result);
+            
+            // Importar dados via API
+            if (data.pessoasFisicas) {
+                for (const pf of data.pessoasFisicas) {
+                    await api.post('/pessoas-fisicas/', pf);
+                }
             }
+            if (data.pessoasJuridicas) {
+                for (const pj of data.pessoasJuridicas) {
+                    await api.post('/pessoas-juridicas/', pj);
+                }
+            }
+            if (data.fotos) {
+                for (const foto of data.fotos) {
+                    await api.post('/fotos/', foto);
+                }
+            }
+            if (data.relacionamentos) {
+                for (const rel of data.relacionamentos) {
+                    await api.post('/relacionamentos/', rel);
+                }
+            }
+            
+            showNotification('Backup importado com sucesso!', 'success');
+            await loadDashboard();
+            loadSectionData(currentSection);
         } catch (error) {
             console.error('Erro ao importar backup:', error);
             showNotification('Arquivo de backup inválido', 'error');
@@ -743,7 +817,7 @@ function validarCNPJ(cnpj) {
 }
 
 // Buscar GOA no dashboard
-function buscarGoaDashboard() {
+async function buscarGoaDashboard() {
     const goaInput = document.getElementById('busca-goa-dashboard');
     
     if (!goaInput) return;
@@ -756,19 +830,19 @@ function buscarGoaDashboard() {
     }
     
     try {
-        // Verificar se é busca por prefixo ou GOA completo
+        // Buscar pessoas via API pelo prefixo GOA
+        const pessoasFisicas = await api.get('/pessoas-fisicas/?goa__startswith=' + goa);
+        const pessoasJuridicas = await api.get('/pessoas-juridicas/?goa__startswith=' + goa);
+        
         let resultados = [];
         
-        if (goa.length === 6 && goa.startsWith('GOA')) {
-            // Busca por prefixo
-            resultados = db.searchByGOAPrefix(goa);
-        } else {
-            // Busca por GOA específico
-            const resultado = db.searchByGOA(goa);
-            if (resultado) {
-                resultados = [resultado];
-            }
-        }
+        // Converter para formato compatível
+        pessoasFisicas.forEach(pessoa => {
+            resultados.push({ pessoa, tipo: 'fisica' });
+        });
+        pessoasJuridicas.forEach(pessoa => {
+            resultados.push({ pessoa, tipo: 'juridica' });
+        });
         
         if (resultados.length > 0) {
             if (resultados.length === 1) {

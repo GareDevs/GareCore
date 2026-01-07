@@ -36,7 +36,7 @@ function loadArvoreRelacionamentos() {
 // Função removida - agora usamos apenas busca inteligente
 
 // Criar relacionamento
-function criarRelacionamento() {
+async function criarRelacionamento() {
     try {
         const origemValue = document.getElementById('pessoa-origem').value;
         const destinoValue = document.getElementById('pessoa-destino').value;
@@ -58,7 +58,7 @@ function criarRelacionamento() {
         const [tipoDestino, idDestino] = destinoValue.split('_');
 
         // Verificar se relacionamento já existe
-        const relacionamentoExistente = verificarRelacionamentoExistente(
+        const relacionamentoExistente = await verificarRelacionamentoExistente(
             idOrigem, tipoOrigem, idDestino, tipoDestino
         );
 
@@ -76,7 +76,7 @@ function criarRelacionamento() {
             descricao: descricao
         };
 
-        db.insert('relacionamentos', relacionamentoData);
+        api.post('/relacionamentos/', relacionamentoData);
         showNotification('Relacionamento criado com sucesso!', 'success');
         
         // Limpar formulário
@@ -94,9 +94,9 @@ function criarRelacionamento() {
 }
 
 // Verificar se relacionamento já existe
-function verificarRelacionamentoExistente(idOrigem, tipoOrigem, idDestino, tipoDestino) {
+async function verificarRelacionamentoExistente(idOrigem, tipoOrigem, idDestino, tipoDestino) {
     try {
-        const relacionamentos = db.getAll('relacionamentos');
+        const relacionamentos = await api.get('/relacionamentos/');
         return relacionamentos.some(rel => 
             (rel.pessoa_origem_id === idOrigem && rel.tipo_origem === tipoOrigem &&
              rel.pessoa_destino_id === idDestino && rel.tipo_destino === tipoDestino) ||
@@ -126,7 +126,7 @@ function renderizarArvore() {
                     <div class="text-center">
                         <i class="fas fa-project-diagram fa-4x text-muted mb-3"></i>
                         <h5 class="text-muted">Nenhum relacionamento encontrado</h5>
-                        <p class="text-muted">Crie relacionamentos entre pessoas para visualizar a árvore.</p>
+                        <p class="text-muted">Crie relacionamentos entre pessoas para visualizar a árvorjjje.</p>
                     </div>
                 </div>
             `;
@@ -189,17 +189,17 @@ function renderizarArvore() {
 }
 
 // Preparar dados para a árvore
-function prepararDadosArvore() {
+async function prepararDadosArvore() {
     const nodes = [];
     const links = [];
     const nodeIds = new Set();
 
     try {
         // Primeiro, criar relacionamentos automáticos baseados nos dados de família
-        criarRelacionamentosAutomaticosFamilia();
+        await criarRelacionamentosAutomaticosFamilia();
         
         // Obter todos os relacionamentos (manuais + automáticos)
-        const relacionamentos = db.getAll('relacionamentos');
+        const relacionamentos = await api.get('/relacionamentos/');
 
         relacionamentos.forEach(rel => {
             // Corrigir nomes dos campos baseado na estrutura real
@@ -256,18 +256,18 @@ function prepararDadosArvore() {
 }
 
 // Criar relacionamentos automáticos baseados nos dados de família
-function criarRelacionamentosAutomaticosFamilia() {
+async function criarRelacionamentosAutomaticosFamilia() {
     try {
         console.log('👨‍👩‍👧‍👦 Criando relacionamentos automáticos de família...');
         
-        const pessoasFisicas = db.getAll('pessoa_fisica');
-        const relacionamentosExistentes = db.getAll('relacionamentos');
+        const pessoasFisicas = await api.get('/pessoas-fisicas/');
+        const relacionamentosExistentes = await api.get('/relacionamentos/');
         let novosRelacionamentos = 0;
         
-        pessoasFisicas.forEach(pessoa => {
+        for (const pessoa of pessoasFisicas) {
             // Relacionamentos com filhos
             if (pessoa.filhos && typeof pessoa.filhos === 'object') {
-                Object.values(pessoa.filhos).forEach((filho, index) => {
+                for (const filho of Object.values(pessoa.filhos)) {
                     if (filho.nome && filho.nome.trim()) {
                         // Procurar filho pelo nome nos registros
                         const filhoEncontrado = pessoasFisicas.find(p => 
@@ -282,8 +282,8 @@ function criarRelacionamentosAutomaticosFamilia() {
                             );
                             
                             if (!jaExiste) {
-                                // Criar relacionamento pai/mãe -> filho
-                                db.insert('relacionamentos', {
+                                // Criar relacionamento pai/mãe -> filho (async, não esperar)
+                                api.post('/relacionamentos/', {
                                     pessoa_origem_id: pessoa.id,
                                     pessoa_destino_id: filhoEncontrado.id,
                                     tipo_origem: 'fisica',
@@ -296,12 +296,12 @@ function criarRelacionamentosAutomaticosFamilia() {
                             }
                         }
                     }
-                });
+                }
             }
             
             // Relacionamentos com irmãos
             if (pessoa.irmaos && typeof pessoa.irmaos === 'object') {
-                Object.values(pessoa.irmaos).forEach(irmao => {
+                for (const irmao of Object.values(pessoa.irmaos)) {
                     if (irmao.nome && irmao.nome.trim()) {
                         // Procurar irmão pelo nome nos registros
                         const irmaoEncontrado = pessoasFisicas.find(p => 
@@ -317,7 +317,7 @@ function criarRelacionamentosAutomaticosFamilia() {
                             
                             if (!jaExiste) {
                                 // Criar relacionamento irmão
-                                db.insert('relacionamentos', {
+                                api.post('/relacionamentos/', {
                                     pessoa_origem_id: pessoa.id,
                                     pessoa_destino_id: irmaoEncontrado.id,
                                     tipo_origem: 'fisica',
@@ -330,15 +330,16 @@ function criarRelacionamentosAutomaticosFamilia() {
                             }
                         }
                     }
-                });
+                }
             }
             
             // Relacionamentos empresariais
             if (pessoa.empresas && typeof pessoa.empresas === 'object') {
-                Object.values(pessoa.empresas).forEach(empresa => {
+                const pessoasJuridicas = await api.get('/pessoas-juridicas/');
+                
+                for (const empresa of Object.values(pessoa.empresas)) {
                     if (empresa.razao_social && empresa.razao_social.trim()) {
                         // Procurar empresa nos registros de PJ
-                        const pessoasJuridicas = db.getAll('pessoa_juridica');
                         const empresaEncontrada = pessoasJuridicas.find(pj => 
                             pj.razao_social && pj.razao_social.toLowerCase().includes(empresa.razao_social.toLowerCase())
                         );
@@ -352,7 +353,7 @@ function criarRelacionamentosAutomaticosFamilia() {
                             
                             if (!jaExiste) {
                                 // Criar relacionamento empresarial
-                                db.insert('relacionamentos', {
+                                api.post('/relacionamentos/', {
                                     pessoa_origem_id: pessoa.id,
                                     pessoa_destino_id: empresaEncontrada.id,
                                     tipo_origem: 'fisica',
@@ -368,7 +369,7 @@ function criarRelacionamentosAutomaticosFamilia() {
                     
                     // Relacionamentos entre sócios da mesma empresa
                     if (empresa.socios && typeof empresa.socios === 'object') {
-                        Object.values(empresa.socios).forEach(socio => {
+                        for (const socio of Object.values(empresa.socios)) {
                             if (socio.nome && socio.nome.trim()) {
                                 const socioEncontrado = pessoasFisicas.find(p => 
                                     p.nome && p.nome.toLowerCase().includes(socio.nome.toLowerCase())
@@ -381,7 +382,7 @@ function criarRelacionamentosAutomaticosFamilia() {
                                     );
                                     
                                     if (!jaExiste) {
-                                        db.insert('relacionamentos', {
+                                        api.post('/relacionamentos/', {
                                             pessoa_origem_id: pessoa.id,
                                             pessoa_destino_id: socioEncontrado.id,
                                             tipo_origem: 'fisica',
@@ -394,11 +395,11 @@ function criarRelacionamentosAutomaticosFamilia() {
                                     }
                                 }
                             }
-                        });
+                        }
                     }
-                });
+                }
             }
-        });
+        }
         
         if (novosRelacionamentos > 0) {
             console.log(`✅ ${novosRelacionamentos} relacionamentos automáticos de família criados!`);
@@ -410,23 +411,23 @@ function criarRelacionamentosAutomaticosFamilia() {
 }
 
 // Criar relacionamentos automáticos para uma pessoa específica
-function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
+async function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
     try {
         console.log(`🔍 Analisando relacionamentos para pessoa ${pessoaId} (${tipoPessoa})...`);
         
         let novosRelacionamentos = 0;
-        const relacionamentosExistentes = db.getAll('relacionamentos');
+        const relacionamentosExistentes = await api.get('/relacionamentos/');
         
         if (tipoPessoa === 'fisica') {
-            const pessoa = db.getById('pessoa_fisica', pessoaId);
+            const pessoa = await api.get(`/pessoas-fisicas/${pessoaId}/`);
             if (!pessoa) return 0;
             
-            const todasPessoasFisicas = db.getAll('pessoa_fisica');
-            const todasPessoasJuridicas = db.getAll('pessoa_juridica');
+            const todasPessoasFisicas = await api.get('/pessoas-fisicas/');
+            const todasPessoasJuridicas = await api.get('/pessoas-juridicas/');
             
             // Análise de FILHOS
             if (pessoa.filhos && typeof pessoa.filhos === 'object') {
-                Object.values(pessoa.filhos).forEach(filho => {
+                for (const filho of Object.values(pessoa.filhos)) {
                     if (filho.nome && filho.nome.trim()) {
                         console.log(`👶 Procurando filho: ${filho.nome}`);
                         
@@ -449,14 +450,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                             }
                         }
                         
-                        filhosEncontrados.forEach(filhoEncontrado => {
+                        for (const filhoEncontrado of filhosEncontrados) {
                             const jaExiste = relacionamentosExistentes.some(rel => 
                                 (rel.pessoa_origem_id == pessoa.id && rel.pessoa_destino_id == filhoEncontrado.id) ||
                                 (rel.pessoa_origem_id == filhoEncontrado.id && rel.pessoa_destino_id == pessoa.id)
                             );
                             
                             if (!jaExiste) {
-                                db.insert('relacionamentos', {
+                                api.post('/relacionamentos/', {
                                     pessoa_origem_id: pessoa.id,
                                     pessoa_destino_id: filhoEncontrado.id,
                                     tipo_origem: 'fisica',
@@ -468,14 +469,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                                 novosRelacionamentos++;
                                 console.log(`✅ Relacionamento criado: ${pessoa.nome} → ${filhoEncontrado.nome} (${pessoa.sexo === 'Feminino' ? 'Mãe' : 'Pai'})`);
                             }
-                        });
+                        }
                     }
-                });
+                }
             }
             
             // Análise de IRMÃOS
             if (pessoa.irmaos && typeof pessoa.irmaos === 'object') {
-                Object.values(pessoa.irmaos).forEach(irmao => {
+                for (const irmao of Object.values(pessoa.irmaos)) {
                     if (irmao.nome && irmao.nome.trim()) {
                         console.log(`👦 Procurando irmão: ${irmao.nome}`);
                         
@@ -496,14 +497,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                             }
                         }
                         
-                        irmaosEncontrados.forEach(irmaoEncontrado => {
+                        for (const irmaoEncontrado of irmaosEncontrados) {
                             const jaExiste = relacionamentosExistentes.some(rel => 
                                 (rel.pessoa_origem_id == pessoa.id && rel.pessoa_destino_id == irmaoEncontrado.id) ||
                                 (rel.pessoa_origem_id == irmaoEncontrado.id && rel.pessoa_destino_id == pessoa.id)
                             );
                             
                             if (!jaExiste) {
-                                db.insert('relacionamentos', {
+                                api.post('/relacionamentos/', {
                                     pessoa_origem_id: pessoa.id,
                                     pessoa_destino_id: irmaoEncontrado.id,
                                     tipo_origem: 'fisica',
@@ -515,14 +516,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                                 novosRelacionamentos++;
                                 console.log(`✅ Relacionamento criado: ${pessoa.nome} ↔ ${irmaoEncontrado.nome} (Irmãos)`);
                             }
-                        });
+                        }
                     }
-                });
+                }
             }
             
             // Análise de EMPRESAS/SÓCIOS
             if (pessoa.empresas && typeof pessoa.empresas === 'object') {
-                Object.values(pessoa.empresas).forEach(empresa => {
+                for (const empresa of Object.values(pessoa.empresas)) {
                     if (empresa.razao_social && empresa.razao_social.trim()) {
                         console.log(`🏢 Procurando empresa: ${empresa.razao_social}`);
                         
@@ -543,14 +544,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                             }
                         }
                         
-                        empresasEncontradas.forEach(empresaEncontrada => {
+                        for (const empresaEncontrada of empresasEncontradas) {
                             const jaExiste = relacionamentosExistentes.some(rel => 
                                 (rel.pessoa_origem_id == pessoa.id && rel.pessoa_destino_id == empresaEncontrada.id && rel.tipo_destino === 'juridica') ||
                                 (rel.pessoa_origem_id == empresaEncontrada.id && rel.pessoa_destino_id == pessoa.id && rel.tipo_origem === 'juridica')
                             );
                             
                             if (!jaExiste) {
-                                db.insert('relacionamentos', {
+                                api.post('/relacionamentos/', {
                                     pessoa_origem_id: pessoa.id,
                                     pessoa_destino_id: empresaEncontrada.id,
                                     tipo_origem: 'fisica',
@@ -562,11 +563,11 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                                 novosRelacionamentos++;
                                 console.log(`✅ Vínculo empresarial criado: ${pessoa.nome} → ${empresaEncontrada.razao_social} (Sócio)`);
                             }
-                        });
+                        }
                         
                         // Análise de sócios da empresa
                         if (empresa.socios && typeof empresa.socios === 'object') {
-                            Object.values(empresa.socios).forEach(socio => {
+                            for (const socio of Object.values(empresa.socios)) {
                                 if (socio.nome && socio.nome.trim()) {
                                     console.log(`🤝 Procurando sócio: ${socio.nome}`);
                                     
@@ -587,14 +588,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                                         }
                                     }
                                     
-                                    sociosEncontrados.forEach(socioEncontrado => {
+                                    for (const socioEncontrado of sociosEncontrados) {
                                         const jaExiste = relacionamentosExistentes.some(rel => 
                                             (rel.pessoa_origem_id == pessoa.id && rel.pessoa_destino_id == socioEncontrado.id) ||
                                             (rel.pessoa_origem_id == socioEncontrado.id && rel.pessoa_destino_id == pessoa.id)
                                         );
                                         
                                         if (!jaExiste) {
-                                            db.insert('relacionamentos', {
+                                            api.post('/relacionamentos/', {
                                                 pessoa_origem_id: pessoa.id,
                                                 pessoa_destino_id: socioEncontrado.id,
                                                 tipo_origem: 'fisica',
@@ -606,12 +607,12 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                                             novosRelacionamentos++;
                                             console.log(`✅ Parceria criada: ${pessoa.nome} ↔ ${socioEncontrado.nome} (Sócios)`);
                                         }
-                                    });
+                                    }
                                 }
-                            });
+                            }
                         }
                     }
-                });
+                }
             }
             
             // Análise por NOME DE FAMÍLIA (sobrenomes em comum)
@@ -626,14 +627,14 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                         p.nome.toLowerCase().includes(ultimoSobrenome.toLowerCase())
                     );
                     
-                    pessoasComMesmoSobrenome.forEach(parente => {
+                    for (const parente of pessoasComMesmoSobrenome) {
                         const jaExiste = relacionamentosExistentes.some(rel => 
                             (rel.pessoa_origem_id == pessoa.id && rel.pessoa_destino_id == parente.id) ||
                             (rel.pessoa_origem_id == parente.id && rel.pessoa_destino_id == pessoa.id)
                         );
                         
                         if (!jaExiste) {
-                            db.insert('relacionamentos', {
+                            api.post('/relacionamentos/', {
                                 pessoa_origem_id: pessoa.id,
                                 pessoa_destino_id: parente.id,
                                 tipo_origem: 'fisica',
@@ -645,7 +646,7 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
                             novosRelacionamentos++;
                             console.log(`✅ Parentesco criado: ${pessoa.nome} ↔ ${parente.nome} (Mesmo sobrenome)`);
                         }
-                    });
+                    }
                 }
             }
         }
@@ -660,10 +661,10 @@ function criarRelacionamentosParaPessoa(pessoaId, tipoPessoa) {
 }
 
 // Obter informações da pessoa
-function obterInfoPessoa(pessoaId, tipoPessoa) {
+async function obterInfoPessoa(pessoaId, tipoPessoa) {
     try {
-        const table = tipoPessoa === 'fisica' ? 'pessoa_fisica' : 'pessoa_juridica';
-        const pessoa = db.getById(table, pessoaId);
+        const table = tipoPessoa === 'fisica' ? '/pessoas-fisicas/' : '/pessoas-juridicas/';
+        const pessoa = await api.get(`${table}${pessoaId}/`);
         
         if (!pessoa) return { nome: 'Pessoa não encontrada', documento: '-', goa: '-' };
         
@@ -979,18 +980,18 @@ function fecharModalSeguro() {
 }
 
 // Mostrar informações do relacionamento
-function mostrarInfoRelacionamento(relacionamento) {
+async function mostrarInfoRelacionamento(relacionamento) {
     fecharModalSeguro(); // Fechar qualquer modal aberto
     
-    setTimeout(() => {
+    setTimeout(async () => {
         const modalEl = document.getElementById('modalDetalhes');
         const modalTitle = document.querySelector('#modalDetalhes .modal-title');
         const modalBody = document.getElementById('modal-body-content');
     
     modalTitle.textContent = 'Detalhes do Relacionamento';
     
-    const origemInfo = obterInfoPessoa(relacionamento.source.pessoa_id, relacionamento.source.type);
-    const destinoInfo = obterInfoPessoa(relacionamento.target.pessoa_id, relacionamento.target.type);
+const origemInfo = await obterInfoPessoa(relacionamento.source.pessoa_id, relacionamento.source.type);
+    const destinoInfo = await obterInfoPessoa(relacionamento.target.pessoa_id, relacionamento.target.type);
     
     modalBody.innerHTML = `
         <div class="row">
@@ -1049,10 +1050,10 @@ function mostrarInfoPessoa(node) {
 }
 
 // Excluir relacionamento
-function excluirRelacionamento(relacionamentoId) {
+async function excluirRelacionamento(relacionamentoId) {
     if (confirm('Deseja realmente excluir este relacionamento?')) {
         try {
-            db.delete('relacionamentos', relacionamentoId);
+            await api.delete(`/relacionamentos/${relacionamentoId}/`);
             showNotification('Relacionamento excluído com sucesso!', 'success');
             
             // Fechar modal
@@ -1071,9 +1072,14 @@ function excluirRelacionamento(relacionamentoId) {
 }
 
 // Buscar relacionamentos de uma pessoa
-function Pessoa(pessoaId, tipoPessoa) {
+async function buscarRelacionamentosPessoa(pessoaId, tipoPessoa) {
     try {
-        return db.getRelacionamentos(pessoaId, tipoPessoa);
+        const response = await api.listarRelacionamentos();
+        const relacionamentos = response.results || response;
+        return relacionamentos.filter(rel => 
+            (rel.pessoa_origem_id == pessoaId && rel.tipo_origem === tipoPessoa) ||
+            (rel.pessoa_destino_id == pessoaId && rel.tipo_destino === tipoPessoa)
+        );
     } catch (error) {
         console.error('Erro ao buscar relacionamentos:', error);
         return [];
@@ -1081,9 +1087,10 @@ function Pessoa(pessoaId, tipoPessoa) {
 }
 
 // Estatísticas de relacionamentos
-function getEstatisticasRelacionamentos() {
+async function getEstatisticasRelacionamentos() {
     try {
-        const relacionamentos = db.getAll('relacionamentos');
+        const response = await api.listarRelacionamentos();
+        const relacionamentos = response.results || response;
         const tipos = {};
         
         relacionamentos.forEach(rel => {
@@ -1102,7 +1109,7 @@ function getEstatisticasRelacionamentos() {
 }
 
 // Buscar pessoa por GOA e destacar na árvore
-function buscarPorGOA() {
+async function buscarPorGOA() {
     const goaInput = document.getElementById('busca-goa');
     const resultadoDiv = document.getElementById('resultado-goa');
     
@@ -1116,7 +1123,21 @@ function buscarPorGOA() {
     }
     
     try {
-        const resultado = db.searchByGOA(goa);
+        // Buscar em pessoas físicas
+        let resultado = null;
+        const pf = await api.listarPessoasFisicas(1, goa);
+        const pessoasFisicas = pf.results || pf;
+        
+        if (pessoasFisicas && pessoasFisicas.length > 0) {
+            resultado = { pessoa: pessoasFisicas[0], tipo: 'fisica' };
+        } else {
+            // Buscar em pessoas jurídicas
+            const pj = await api.listarPessoasJuridicas(1, goa);
+            const pessoasJuridicas = pj.results || pj;
+            if (pessoasJuridicas && pessoasJuridicas.length > 0) {
+                resultado = { pessoa: pessoasJuridicas[0], tipo: 'juridica' };
+            }
+        }
         
         if (resultado) {
             const pessoa = resultado.pessoa;
@@ -1223,13 +1244,17 @@ function destacarPessoaNaArvore(nodeId) {
 }
 
 // Limpar conexões automáticas
-function limparConexoesAutomaticbuscarRelacionamentosas() {
+async function limparConexoesAutomaticbuscarRelacionamentosas() {
     if (!confirm('Deseja realmente limpar APENAS as conexões automáticas? As conexões manuais serão mantidas.')) {
         return;
     }
     
     try {
-        db.clearAutoRelationships();
+        // Buscar apenas relacionamentos automáticos (com campo auto_related) e deletar
+        const relacionamentos = await api.get('/relacionamentos/?auto_related=true');
+        for (const rel of relacionamentos) {
+            await api.delete(`/relacionamentos/${rel.id}/`);
+        }
         showNotification('Conexões automáticas removidas com sucesso!', 'success');
         renderizarArvore();
         loadDashboard();
@@ -1242,7 +1267,7 @@ function limparConexoesAutomaticbuscarRelacionamentosas() {
 }
 
 // Limpar todas as conexões
-function limparTodasConexoes() {
+async function limparTodasConexoes() {
     if (!confirm('⚠️ ATENÇÃO: Isso removerá TODAS as conexões da árvore (automáticas E manuais). Deseja continuar?')) {
         return;
     }
@@ -1253,7 +1278,8 @@ function limparTodasConexoes() {
     }
     
     try {
-        const relacionamentos = db.getAll('relacionamentos');
+        const response = await api.listarRelacionamentos();
+        const relacionamentos = response.results || response;
         const total = relacionamentos.length;
         
         if (total === 0) {
@@ -1262,7 +1288,9 @@ function limparTodasConexoes() {
         }
         
         // Limpar tabela de relacionamentos
-        db.clear('relacionamentos');
+        for (const rel of relacionamentos) {
+            await api.deletarRelacionamento(rel.id);
+        }
         
         showNotification(`${total} relacionamentos removidos completamente`, 'success');
         renderizarArvore();
@@ -1276,57 +1304,55 @@ function limparTodasConexoes() {
 }
 
 // Gerar relacionamentos automáticos
-function gerarRelacionamentosAutomaticos() {
+async function gerarRelacionamentosAutomaticos() {
     try {
         showNotification('Analisando dados para gerar relacionamentos...', 'info');
         
         let novosRelacionamentos = 0;
-        const relacionamentosEncontrados = [];
         
-        // Analisar pessoas físicas
-        const pessoasFisicas = db.getAll('pessoa_fisica');
-        pessoasFisicas.forEach(pessoa => {
-            const relacionamentos = db.findAutoRelationships(pessoa.id, 'fisica');
-            relacionamentosEncontrados.push(...relacionamentos);
-        });
+        // Obter dados da API
+        const pfResponse = await api.listarPessoasFisicas();
+        const pessoasFisicas = pfResponse.results || pfResponse;
         
-        // Analisar pessoas jurídicas
-        const pessoasJuridicas = db.getAll('pessoa_juridica');
-        pessoasJuridicas.forEach(pessoa => {
-            const relacionamentos = db.findAutoRelationships(pessoa.id, 'juridica');
-            relacionamentosEncontrados.push(...relacionamentos);
-        });
+        const pjResponse = await api.listarPessoasJuridicas();
+        const pessoasJuridicas = pjResponse.results || pjResponse;
         
-        // Criar relacionamentos únicos
-        const relacionamentosExistentes = db.getAll('relacionamentos');
+        const relResponse = await api.listarRelacionamentos();
+        const relacionamentosExistentes = relResponse.results || relResponse;
         
-        relacionamentosEncontrados.forEach(rel => {
-            // Verificar se relacionamento já existe
-            const jaExiste = relacionamentosExistentes.some(existente => 
-                (existente.pessoa_origem_id === rel.pessoa_origem.id && 
-                 existente.pessoa_destino_id === rel.pessoa_destino.id &&
-                 existente.tipo_origem === rel.tipo_origem &&
-                 existente.tipo_destino === rel.tipo_destino) ||
-                (existente.pessoa_origem_id === rel.pessoa_destino.id && 
-                 existente.pessoa_destino_id === rel.pessoa_origem.id &&
-                 existente.tipo_origem === rel.tipo_destino &&
-                 existente.tipo_destino === rel.tipo_origem)
-            );
-            
-            if (!jaExiste) {
-                const novoRelacionamento = {
-                    pessoa_origem_id: rel.pessoa_origem.id,
-                    pessoa_destino_id: rel.pessoa_destino.id,
-                    tipo_origem: rel.tipo_origem,
-                    tipo_destino: rel.tipo_destino,
-                    tipo_relacionamento: rel.tipo,
-                    descricao: `${rel.motivo} (Confiança: ${rel.confianca}%)`
-                };
+        // Analisar relacionamentos potenciais (implementação simplificada)
+        // Buscar nomes/CPF comuns entre pessoas físicas
+        for (let i = 0; i < pessoasFisicas.length; i++) {
+            for (let j = i + 1; j < pessoasFisicas.length; j++) {
+                const pf1 = pessoasFisicas[i];
+                const pf2 = pessoasFisicas[j];
                 
-                db.insert('relacionamentos', novoRelacionamento);
-                novosRelacionamentos++;
+                // Verificar se já existe relacionamento
+                const jaExiste = relacionamentosExistentes.some(rel => 
+                    (rel.pessoa_origem_id === pf1.id && rel.pessoa_destino_id === pf2.id) ||
+                    (rel.pessoa_origem_id === pf2.id && rel.pessoa_destino_id === pf1.id)
+                );
+                
+                // Heurística: mesmo sobrenome
+                if (!jaExiste && pf1.nome && pf2.nome) {
+                    const sobrenome1 = pf1.nome.split(' ').pop();
+                    const sobrenome2 = pf2.nome.split(' ').pop();
+                    
+                    if (sobrenome1.toLowerCase() === sobrenome2.toLowerCase() && sobrenome1.length > 3) {
+                        await api.criarRelacionamento({
+                            pessoa_origem_id: pf1.id,
+                            pessoa_destino_id: pf2.id,
+                            tipo_origem: 'fisica',
+                            tipo_destino: 'fisica',
+                            tipo_relacionamento: 'parente',
+                            descricao: `Possível parentesco pelo sobrenome "${sobrenome1}"`,
+                            automatico: true
+                        });
+                        novosRelacionamentos++;
+                    }
+                }
             }
-        });
+        }
         
         if (novosRelacionamentos > 0) {
             showNotification(`${novosRelacionamentos} relacionamentos automáticos criados!`, 'success');
@@ -1345,29 +1371,48 @@ function gerarRelacionamentosAutomaticos() {
 }
 
 // Buscar pessoa por GOA com relacionamentos automáticos
-function buscarPorGOAComRelacionamentos(goa) {
-    const resultado = db.searchByGOA(goa);
+async function buscarPorGOAComRelacionamentos(goa) {
+    // Buscar em pessoas físicas
+    let resultado = null;
+    const pf = await api.listarPessoasFisicas(1, goa);
+    const pessoasFisicas = pf.results || pf;
+    
+    if (pessoasFisicas && pessoasFisicas.length > 0) {
+        resultado = { pessoa: pessoasFisicas[0], tipo: 'fisica' };
+    } else {
+        // Buscar em pessoas jurídicas
+        const pj = await api.listarPessoasJuridicas(1, goa);
+        const pessoasJuridicas = pj.results || pj;
+        if (pessoasJuridicas && pessoasJuridicas.length > 0) {
+            resultado = { pessoa: pessoasJuridicas[0], tipo: 'juridica' };
+        }
+    }
     
     if (resultado) {
         // Destacar na árvore
         destacarPessoaNaArvore(`${resultado.tipo}_${resultado.pessoa.id}`);
         
-        // Mostrar relacionamentos automáticos encontrados
-        const relacionamentosAuto = db.findAutoRelationships(resultado.pessoa.id, resultado.tipo);
+        // Mostrar relacionamentos da API
+        const relResponse = await api.listarRelacionamentos();
+        const relacionamentos = relResponse.results || relResponse;
+        const relacionamentosAuto = relacionamentos.filter(rel => 
+            (rel.pessoa_origem_id === resultado.pessoa.id && rel.tipo_origem === resultado.tipo) ||
+            (rel.pessoa_destino_id === resultado.pessoa.id && rel.tipo_destino === resultado.tipo)
+        );
         
         if (relacionamentosAuto.length > 0) {
             let detalhesRelacionamentos = '<div class="mt-3"><h6>Relacionamentos Detectados:</h6><ul class="list-unstyled">';
             
             relacionamentosAuto.forEach(rel => {
-                const pessoa = rel.tipo_destino === 'fisica' ? rel.pessoa_destino.nome : rel.pessoa_destino.razao_social;
-                const confianca = rel.confianca;
+                const pessoa = rel.tipo_destino === 'fisica' ? rel.pessoa_destino_nome : rel.pessoa_destino_razao_social;
+                const confianca = rel.confianca || 100;
                 const corBadge = confianca >= 90 ? 'success' : confianca >= 70 ? 'warning' : 'info';
                 
                 detalhesRelacionamentos += `
                     <li class="mb-2">
                         <span class="badge bg-${corBadge}">${confianca}%</span>
-                        <strong>${rel.tipo}</strong>: ${pessoa}
-                        <br><small class="text-muted">${rel.motivo}</small>
+                        <strong>${rel.tipo_relacionamento}</strong>: ${pessoa}
+                        <br><small class="text-muted">${rel.descricao}</small>
                     </li>
                 `;
             });
@@ -1434,9 +1479,10 @@ function getRelationshipLabel(tipo) {
 }
 
 // Exportar relacionamentos
-function exportarRelacionamentos() {
+async function exportarRelacionamentos() {
     try {
-        const relacionamentos = db.getAll('relacionamentos');
+        const response = await api.listarRelacionamentos();
+        const relacionamentos = response.results || response;
         let lista = 'LISTA DE RELACIONAMENTOS\n';
         lista += '========================\n\n';
 
@@ -1499,8 +1545,9 @@ function analisarTodosOsDados() {
         arvoreContainer.insertBefore(progressContainer, arvoreContainer.firstChild);
         
         // Executar análise automática (com pequeno delay para UI)
-        setTimeout(() => {
-            const resultado = db.analyzeAllDataAndCreateRelationships();
+        setTimeout(async () => {
+            // Análise simplificada: chamar função que já foi migrada
+            await gerarRelacionamentosAutomaticos();
             
             // Remover indicador de progresso
             const progressElement = document.getElementById('progress-analise');
@@ -1508,27 +1555,10 @@ function analisarTodosOsDados() {
                 progressElement.parentElement.remove();
             }
             
-            if (resultado.success) {
-                showNotification(
-                    `✅ Análise concluída! ${resultado.relacionamentosEncontrados} relacionamentos encontrados de ${resultado.totalAnalisados} registros analisados.`,
-                    'success'
-                );
-                
-                // Atualizar árvore
-                renderizarArvore();
-                loadDashboard();
-                updateStatusBar(`Análise automática: ${resultado.relacionamentosEncontrados} vínculos criados`);
-                
-                // Mostrar resumo detalhado
-                if (resultado.relacionamentosEncontrados > 0) {
-                    setTimeout(() => {
-                        mostrarResumoAnalise(resultado.relacionamentos);
-                    }, 1000);
-                }
-                
-            } else {
-                showNotification(`❌ Erro na análise: ${resultado.error}`, 'error');
-            }
+            // Atualizar árvore
+            renderizarArvore();
+            loadDashboard();
+            updateStatusBar(`Análise automática completada`);
         }, 500);
         
     } catch (error) {
@@ -1669,32 +1699,33 @@ function deveExpandirVinculos(pessoaId, tipoPessoa) {
 }
 
 // Obter relacionamentos expandidos para uma pessoa
-function obterRelacionamentosExpandidos(pessoaId, tipoPessoa) {
+async function obterRelacionamentosExpandidos(pessoaId, tipoPessoa) {
     if (!deveExpandirVinculos(pessoaId, tipoPessoa)) {
         return [];
     }
     
-    const relacionamentos = db.getAll('relacionamentos');
+    const response = await api.listarRelacionamentos();
+    const relacionamentos = response.results || response;
     const relacionamentosExpandidos = [];
     
     relacionamentos.forEach(rel => {
-        if ((rel.pessoa_origem_id == pessoaId && rel.pessoa_origem_tipo === tipoPessoa) ||
-            (rel.pessoa_destino_id == pessoaId && rel.pessoa_destino_tipo === tipoPessoa)) {
+        if ((rel.pessoa_origem_id == pessoaId && rel.tipo_origem === tipoPessoa) ||
+            (rel.pessoa_destino_id == pessoaId && rel.tipo_destino === tipoPessoa)) {
             
             // Adicionar informações do relacionamento expandido
             relacionamentosExpandidos.push({
                 id: rel.id,
-                tipo: rel.tipo,
+                tipo: rel.tipo_relacionamento,
                 descricao: rel.descricao,
                 confianca: rel.confianca || 100,
                 automatico: rel.automatico || false,
                 origem: {
                     id: rel.pessoa_origem_id,
-                    tipo: rel.pessoa_origem_tipo
+                    tipo: rel.tipo_origem
                 },
                 destino: {
                     id: rel.pessoa_destino_id,
-                    tipo: rel.pessoa_destino_tipo
+                    tipo: rel.tipo_destino
                 }
             });
         }
@@ -1704,7 +1735,7 @@ function obterRelacionamentosExpandidos(pessoaId, tipoPessoa) {
 }
 
 // SISTEMA DE BUSCA AVANÇADA NA ÁRVORE
-function buscarPessoaNaArvore() {
+async function buscarPessoaNaArvore() {
     const termo = document.getElementById('busca-arvore').value.trim();
     const resultadosDiv = document.getElementById('resultados-busca-arvore');
     
@@ -1722,8 +1753,12 @@ function buscarPessoaNaArvore() {
     resultadosDiv.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm me-2"></div>Buscando...</div>';
     
     // Buscar em pessoas físicas e jurídicas
-    const pessoasFisicas = db.getAll('pessoa_fisica');
-    const pessoasJuridicas = db.getAll('pessoa_juridica');
+    const pfResponse = await api.listarPessoasFisicas();
+    const pessoasFisicas = pfResponse.results || pfResponse;
+    
+    const pjResponse = await api.listarPessoasJuridicas();
+    const pessoasJuridicas = pjResponse.results || pjResponse;
+    
     const resultados = [];
     
     // Buscar em pessoas físicas
@@ -1866,10 +1901,15 @@ function mostrarResultadosBusca(resultados, termo) {
 }
 
 // Atualizar estatísticas da árvore
-function atualizarEstatisticasArvore() {
-    const pessoasFisicas = db.getAll('pessoa_fisica');
-    const pessoasJuridicas = db.getAll('pessoa_juridica');
-    const relacionamentos = db.getAll('relacionamentos');
+async function atualizarEstatisticasArvore() {
+    const pfResponse = await api.listarPessoasFisicas();
+    const pessoasFisicas = pfResponse.results || pfResponse;
+    
+    const pjResponse = await api.listarPessoasJuridicas();
+    const pessoasJuridicas = pjResponse.results || pjResponse;
+    
+    const relResponse = await api.listarRelacionamentos();
+    const relacionamentos = relResponse.results || relResponse;
     
     const totalPessoas = pessoasFisicas.length + pessoasJuridicas.length;
     const totalRelacionamentos = relacionamentos.length;
@@ -1920,13 +1960,16 @@ function localizarEExpandirNaArvore(pessoaId, tipoPessoa) {
 }
 
 // Função melhorada de busca por GOA na árvore
-function buscarPorGOANaArvore(goa) {
+async function buscarPorGOANaArvore(goa) {
     try {
         console.log('🔍 Buscando GOA na árvore:', goa);
         
         // Buscar pessoa pelo GOA
-        const pessoasFisicas = db.getAll('pessoa_fisica');
-        const pessoasJuridicas = db.getAll('pessoa_juridica');
+        const pfResponse = await api.listarPessoasFisicas(1, goa);
+        const pessoasFisicas = pfResponse.results || pfResponse;
+        
+        const pjResponse = await api.listarPessoasJuridicas(1, goa);
+        const pessoasJuridicas = pjResponse.results || pjResponse;
         
         let pessoaEncontrada = null;
         let tipoPessoa = null;

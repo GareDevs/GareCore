@@ -82,6 +82,12 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Mostrar esta seção quando acessada diretamente
+        const section = document.getElementById('fotos');
+        if (section) {
+            section.style.display = 'block';
+        }
+        
         // Carregar gerenciador de fotos se ainda não foi carregado
         if (!document.getElementById('galeria-fotos')?.children.length) {
             loadGerenciadorFotos();

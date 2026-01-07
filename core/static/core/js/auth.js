@@ -4,6 +4,69 @@
  */
 
 // ==========================================
+// UTILIDADES
+// ==========================================
+
+/**
+ * Decodifica um JWT e extrai o payload
+ */
+function decodeJWT(token) {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        const payload = JSON.parse(atob(parts[1]));
+        return payload;
+    } catch (error) {
+        console.error('Erro ao decodificar JWT:', error);
+        return null;
+    }
+}
+
+/**
+ * Verifica se o token está expirado
+ */
+function isTokenExpired(token) {
+    const decoded = decodeJWT(token);
+    if (!decoded || !decoded.exp) return true;
+    return decoded.exp * 1000 < Date.now();
+}
+
+/**
+ * Faz refresh do token usando o refresh token
+ */
+async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return false;
+    
+    try {
+        const response = await originalFetch('/api/token/refresh/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh: refreshToken })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const newToken = data.access;
+            localStorage.setItem('access_token', newToken);
+            
+            // Atualiza o cookie também
+            const decoded = decodeJWT(newToken);
+            if (decoded && decoded.exp) {
+                const maxAge = decoded.exp - Math.floor(Date.now() / 1000);
+                document.cookie = `access_token=${newToken}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            }
+            
+            console.log('✅ Token renovado com sucesso');
+            return true;
+        }
+    } catch (error) {
+        console.error('Erro ao renovar token:', error);
+    }
+    return false;
+}
+
+// ==========================================
 // INTERCEPTOR DE REQUISIÇÕES
 // ==========================================
 
@@ -11,17 +74,30 @@
 const originalFetch = window.fetch;
 
 // Substitui a função fetch com um wrapper que adiciona o token JWT
-window.fetch = function(...args) {
+window.fetch = async function(...args) {
     const [resource, config] = args;
     const resourceStr = typeof resource === 'string' ? resource : resource.url;
     
     // Não adiciona token para rotas públicas
-    const publicRoutes = ['/login/', '/registro/', '/api/login/', '/api/registro/'];
+    const publicRoutes = ['/login/', '/registro/', '/api/login/', '/api/registro/', '/api/token/refresh/'];
     const isPublicRoute = publicRoutes.some(route => resourceStr.includes(route));
     
     if (!isPublicRoute) {
-        // Adiciona o token JWT ao header Authorization
-        const token = localStorage.getItem('access_token');
+        let token = localStorage.getItem('access_token');
+        
+        // Verifica se o token está expirado e tenta renovar
+        if (token && isTokenExpired(token)) {
+            console.warn('⚠️ Token expirado, tentando renovar...');
+            const refreshed = await refreshAccessToken();
+            if (refreshed) {
+                token = localStorage.getItem('access_token');
+            } else {
+                // Não conseguiu renovar, logout
+                logout();
+                return originalFetch(...args);
+            }
+        }
+        
         if (token) {
             const newConfig = {
                 ...config,

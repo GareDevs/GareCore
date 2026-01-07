@@ -1,10 +1,9 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Cadastro - Pessoa Física{% endblock %}
+{% block title %}Cadastro - Pessoa Jurídica{% endblock %}
 
 {% block content %}
-
-<div id="cadastro-pj" class="section" data-load-function="loadFormPessoaJuridica">
+<div id="cadastro-pj">
     <div class="row">
         <div class="col-12">
             <h2><i class="fas fa-building me-2"></i>Cadastro de Pessoa Jurídica</h2>
@@ -15,9 +14,228 @@
             <div class="card">
                 <div class="card-body">
                     <form id="form-pessoa-juridica">
-                        <!-- Formulário será inserido aqui pelo JavaScript -->
-                        <div id="form-container-pj"></div>
-                        <button type="submit" class="btn btn-success mt-3">Salvar Pessoa Jurídica</button>
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label for="pj-razao-social" class="form-label">Razão Social *</label>
+                                <input type="text" class="form-control" id="pj-razao-social" required>
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <label for="pj-nome-fantasia" class="form-label">Nome Fantasia</label>
+                                <input type="text" class="form-control" id="pj-nome-fantasia">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="pj-goa" class="form-label">GOA</label>
+                                <input type="text" class="form-control" id="pj-goa" placeholder="Digite qualquer código GOA">
+                                <div class="form-text">
+                                    <small class="text-success">Campo livre - Digite qualquer código</small>
+                                </div>
+                                <div id="pj-goa-status" class="mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-cnpj" class="form-label">CNPJ *</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="pj-cnpj" required maxlength="18" placeholder="00.000.000/0000-00">
+                                    <button class="btn btn-outline-success btn-sm" type="button" onclick="gerarCNPJParaFormulario('pj-cnpj')" title="Gerar CNPJ válido">
+                                        <i class="fas fa-magic"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Clique no botão para gerar um CNPJ válido</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-situacao" class="form-label">Situação</label>
+                                <select class="form-select" id="pj-situacao">
+                                    <option value="">Selecione...</option>
+                                    <option value="Ativa">Ativa</option>
+                                    <option value="Inativa">Inativa</option>
+                                    <option value="Suspensa">Suspensa</option>
+                                    <option value="Baixada">Baixada</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-tipo" class="form-label">Tipo de Empresa</label>
+                                <input type="text" class="form-control" id="pj-tipo" placeholder="Ltda, S.A., MEI...">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-data-abertura" class="form-label">Data de Abertura</label>
+                                <input type="date" class="form-control" id="pj-data-abertura">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-capital-social" class="form-label">Capital Social</label>
+                                <input type="number" class="form-control" id="pj-capital-social" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-cidade" class="form-label">Cidade</label>
+                                <input type="text" class="form-control" id="pj-cidade">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pj-porte" class="form-label">Porte da Empresa</label>
+                                <input type="text" class="form-control" id="pj-porte" placeholder="ME, EPP, MEI, LTDA, S.A...">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pj-data-fechamento" class="form-label">Data de Fechamento</label>
+                                <input type="date" class="form-control" id="pj-data-fechamento">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pj-data-situacao-cadastral" class="form-label">Data Situação Cadastral</label>
+                                <input type="date" class="form-control" id="pj-data-situacao-cadastral">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pj-cnae" class="form-label">CNAE Principal</label>
+                                <input type="text" class="form-control" id="pj-cnae" placeholder="Ex: 62.01-5-01">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pj-email" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="pj-email" placeholder="email@empresa.com.br">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="pj-endereco" class="form-label">Logradouro / Endereço</label>
+                                <input type="text" class="form-control" id="pj-endereco">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pj-cep" class="form-label">CEP</label>
+                                <input type="text" class="form-control" id="pj-cep" placeholder="00000-000">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="pj-telefone1" class="form-label">Telefone 1</label>
+                                <input type="text" class="form-control" id="pj-telefone1" placeholder="(00) 00000-0000">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="pj-telefone2" class="form-label">Telefone 2</label>
+                                <input type="text" class="form-control" id="pj-telefone2" placeholder="(00) 00000-0000">
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Informações de Filial</h5>
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pj-possui-filial">
+                                    <label class="form-check-label" for="pj-possui-filial">
+                                        Possui Filial
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <label for="pj-endereco-filial" class="form-label">Endereço da Filial</label>
+                                <input type="text" class="form-control" id="pj-endereco-filial">
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <label for="pj-cidade-filial" class="form-label">Cidade da Filial</label>
+                                <input type="text" class="form-control" id="pj-cidade-filial">
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Informações Fiscais (Simples Nacional / MEI)</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-simples-situacao" class="form-label">Situação Simples Nacional</label>
+                                <select class="form-select" id="pj-simples-situacao">
+                                    <option value="">Selecione...</option>
+                                    <option value="Nao Optante">Não Optante</option>
+                                    <option value="Optante">Optante</option>
+                                    <option value="Excluida">Excluída</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-data-opcao-simples" class="form-label">Data Opção Simples</label>
+                                <input type="date" class="form-control" id="pj-data-opcao-simples">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pj-data-exclusao-simples" class="form-label">Data Exclusão Simples</label>
+                                <input type="date" class="form-control" id="pj-data-exclusao-simples">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="pj-mei">
+                                    <label class="form-check-label" for="pj-mei">
+                                        Empresa MEI
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Sócios da Empresa</h5>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label for="pj-socio1-nome" class="form-label">Nome do Sócio 1</label>
+                                <input type="text" class="form-control" id="pj-socio1-nome" placeholder="Nome completo do sócio">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pj-socio1-cpf" class="form-label">CPF do Sócio 1</label>
+                                <input type="text" class="form-control" id="pj-socio1-cpf" placeholder="000.000.000-00" maxlength="14">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label for="pj-socio2-nome" class="form-label">Nome do Sócio 2</label>
+                                <input type="text" class="form-control" id="pj-socio2-nome" placeholder="Nome completo do sócio">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pj-socio2-cpf" class="form-label">CPF do Sócio 2</label>
+                                <input type="text" class="form-control" id="pj-socio2-cpf" placeholder="000.000.000-00" maxlength="14">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label for="pj-socio3-nome" class="form-label">Nome do Sócio 3</label>
+                                <input type="text" class="form-control" id="pj-socio3-nome" placeholder="Nome completo do sócio">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pj-socio3-cpf" class="form-label">CPF do Sócio 3</label>
+                                <input type="text" class="form-control" id="pj-socio3-cpf" placeholder="000.000.000-00" maxlength="14">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <label for="pj-socio4-nome" class="form-label">Nome do Sócio 4</label>
+                                <input type="text" class="form-control" id="pj-socio4-nome" placeholder="Nome completo do sócio">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pj-socio4-cpf" class="form-label">CPF do Sócio 4</label>
+                                <input type="text" class="form-control" id="pj-socio4-cpf" placeholder="000.000.000-00" maxlength="14">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="pj-observacoes" class="form-label">Observações</label>
+                                <textarea class="form-control" id="pj-observacoes" rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-save me-1"></i>Salvar
+                                </button>
+                                <button type="button" class="btn btn-secondary me-2" onclick="clearFormPJ()">
+                                    <i class="fas fa-times me-1"></i>Limpar
+                                </button>
+                                <button type="button" class="btn btn-info" onclick="showSection('listar-pj')">
+                                    <i class="fas fa-list me-1"></i>Ver Lista
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -27,20 +245,144 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'core/js/utils-forms.js' %}"></script>
 <script>
+    // Variável global para controlar edição
+    let editingRecord = null;
+
     document.addEventListener('DOMContentLoaded', () => {
-        // Carregar formulário se ainda não foi carregado
-        if (!document.getElementById('form-container-pj')?.children.length) {
-            loadFormPessoaJuridica();
-        }
+        console.log('📄 Página Cadastro PJ carregada');
         
+        // Aplicar máscaras
+        applyMasks();
+        
+        // Configurar submit do formulário
         const form = document.getElementById('form-pessoa-juridica');
         if (form) {
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 salvarPessoaJuridica();
             });
         }
+        
+        // GOA agora é livre - sem validação em tempo real
+        const goaInput = document.getElementById('pj-goa');
+        if (goaInput) {
+            goaInput.addEventListener('input', function() {
+                const statusDiv = document.getElementById('pj-goa-status');
+                if (statusDiv) {
+                    statusDiv.innerHTML = '<small class="text-success"><i class="fas fa-check me-1"></i>Código aceito</small>';
+                }
+            });
+        }
     });
+    
+    function salvarPessoaJuridica() {
+        try {
+            const goa = document.getElementById('pj-goa').value.trim();
+            
+            const formData = {
+                goa: goa,
+                razao_social: document.getElementById('pj-razao-social').value.trim(),
+                nome_fantasia: document.getElementById('pj-nome-fantasia').value.trim(),
+                cnpj: document.getElementById('pj-cnpj').value.replace(/\D/g, ''),
+                situacao: document.getElementById('pj-situacao').value,
+                tipo: document.getElementById('pj-tipo').value.trim(),
+                data_abertura: document.getElementById('pj-data-abertura').value,
+                capital_social: parseFloat(document.getElementById('pj-capital-social').value) || 0,
+                cidade: document.getElementById('pj-cidade').value.trim(),
+                porte_empresa: document.getElementById('pj-porte')?.value.trim() || '',
+                data_fechamento: document.getElementById('pj-data-fechamento')?.value || '',
+                data_situacao_cadastral: document.getElementById('pj-data-situacao-cadastral')?.value || '',
+                cnae_principal: document.getElementById('pj-cnae')?.value.trim() || '',
+                email: document.getElementById('pj-email')?.value.trim() || '',
+                cep: document.getElementById('pj-cep')?.value.trim() || '',
+                telefone1: document.getElementById('pj-telefone1')?.value.trim() || '',
+                telefone2: document.getElementById('pj-telefone2')?.value.trim() || '',
+                situacao_simples_nacional: document.getElementById('pj-simples-situacao')?.value || '',
+                data_opcao_simples: document.getElementById('pj-data-opcao-simples')?.value || '',
+                data_exclusao_simples: document.getElementById('pj-data-exclusao-simples')?.value || '',
+                mei: document.getElementById('pj-mei')?.checked || false,
+                endereco: document.getElementById('pj-endereco').value.trim(),
+                possui_filial: document.getElementById('pj-possui-filial').checked,
+                endereco_filial: document.getElementById('pj-endereco-filial').value.trim(),
+                cidade_filial: document.getElementById('pj-cidade-filial').value.trim(),
+                socios: {
+                    socio1: {
+                        nome: document.getElementById('pj-socio1-nome').value.trim(),
+                        cpf: document.getElementById('pj-socio1-cpf').value.replace(/\D/g, '')
+                    },
+                    socio2: {
+                        nome: document.getElementById('pj-socio2-nome').value.trim(),
+                        cpf: document.getElementById('pj-socio2-cpf').value.replace(/\D/g, '')
+                    },
+                    socio3: {
+                        nome: document.getElementById('pj-socio3-nome').value.trim(),
+                        cpf: document.getElementById('pj-socio3-cpf').value.replace(/\D/g, '')
+                    },
+                    socio4: {
+                        nome: document.getElementById('pj-socio4-nome').value.trim(),
+                        cpf: document.getElementById('pj-socio4-cpf').value.replace(/\D/g, '')
+                    }
+                },
+                observacoes: document.getElementById('pj-observacoes').value.trim()
+            };
+
+            // Validar dados mínimos
+            if (!formData.razao_social) {
+                showNotification('❌ Preencha a razão social!', 'warning');
+                return;
+            }
+
+            if (formData.cnpj && formData.cnpj.length !== 14) {
+                showNotification('❌ CNPJ deve ter 14 dígitos!', 'error');
+                return;
+            }
+
+            if (formData.cnpj && !validarCNPJ(formData.cnpj)) {
+                showNotification('❌ CNPJ inválido!', 'error');
+                return;
+            }
+
+            console.log('💾 Enviando dados da PJ:', formData);
+
+            const method = editingRecord ? 'PATCH' : 'POST';
+            const url = editingRecord 
+                ? `/api/pessoas-juridicas/${editingRecord.id}/`
+                : '/api/pessoas-juridicas/';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                const msg = editingRecord 
+                    ? 'Pessoa Jurídica atualizada com sucesso!' 
+                    : 'Pessoa Jurídica cadastrada com sucesso!';
+                showNotification('✅ ' + msg, 'success');
+                clearFormPJ();
+                editingRecord = null;
+                setTimeout(() => showSection('listar-pj'), 1500);
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showNotification('❌ Erro: ' + (error.message || 'Verifique os dados'), 'error');
+            });
+
+        } catch (error) {
+            console.error('Erro ao processar formulário:', error);
+            showNotification('❌ Erro ao processar formulário', 'error');
+        }
+    }
 </script>
 {% endblock %}

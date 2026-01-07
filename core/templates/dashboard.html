@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Dashboard - Sistema Desktop{% endblock %}
 
 {% block content %}
@@ -43,7 +44,7 @@
             <h5 class="mb-0">Pessoas Físicas</h5>
           </div>
           <div class="card-body">
-            <div class="dashboard-number" id="total-pf">0</div>
+            <div class="dashboard-number" id="total-pessoas-fisicas">0</div>
             <div class="dashboard-label">cadastradas</div>
           </div>
         </div>
@@ -56,8 +57,8 @@
             <h5 class="mb-0">Pessoas Jurídicas</h5>
           </div>
           <div class="card-body">
-            <div class="dashboard-number" id="total-pj">0</div>
-            <div class="dashboard-label" id="label-pj">cadastradas</div>
+            <div class="dashboard-number" id="total-pessoas-juridicas">0</div>
+            <div class="dashboard-label">cadastradas</div>
           </div>
         </div>
       </div>
@@ -70,7 +71,7 @@
           </div>
           <div class="card-body">
             <div class="dashboard-number" id="total-fotos">0</div>
-            <div class="dashboard-label" id="label-fotos">arquivos</div>
+            <div class="dashboard-label">arquivos</div>
           </div>
         </div>
       </div>
@@ -83,25 +84,116 @@
           </div>
           <div class="card-body">
             <div class="dashboard-number" id="total-relacionamentos">0</div>
-            <div class="dashboard-label" id="label-relacionamentos">vínculos</div>
+            <div class="dashboard-label">vínculos</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row mt-5">
+    <!-- Estatísticas Detalhadas -->
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Estatísticas Gerais</h6>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-6">
+                <div class="stat-item">
+                  <div class="stat-number" id="total-pessoas">0</div>
+                  <div class="stat-label">Total de Pessoas</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-item">
+                  <div class="stat-number" id="pessoas-com-fotos">0</div>
+                  <div class="stat-label">Com Fotos</div>
+                </div>
+              </div>
+              <div class="col-6 mt-3">
+                <div class="stat-item">
+                  <div class="stat-number" id="percentual-com-fotos">0%</div>
+                  <div class="stat-label">% com Fotos</div>
+                </div>
+              </div>
+              <div class="col-6 mt-3">
+                <div class="stat-item">
+                  <div class="stat-number" id="pessoas-com-relacionamentos">0</div>
+                  <div class="stat-label">Com Relacionamentos</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-tags me-2"></i>Distribuição por Prefixo GOA</h6>
+          </div>
+          <div class="card-body">
+            <div id="goa-chart">
+              <!-- Gráfico GOA será carregado aqui -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos e Atividades -->
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-link me-2"></i>Relacionamentos por Tipo</h6>
+          </div>
+          <div class="card-body">
+            <div id="relacionamentos-chart">
+              <!-- Gráfico de relacionamentos será carregado aqui -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0"><i class="fas fa-clock me-2"></i>Atividades Recentes</h6>
+          </div>
+          <div class="card-body">
+            <div id="atividades-recentes">
+              <!-- Atividades recentes serão carregadas aqui -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resultados da Busca -->
+    <div class="row mt-4" id="search-results-section" style="display: none;">
       <div class="col-12">
         <div class="card">
           <div class="card-header">
-            <h5 class="mb-0">
-              <i class="fas fa-users me-2"></i>Pessoas Recentemente Cadastradas
-              <span class="badge bg-primary ms-2" id="recent-count">0</span>
-            </h5>
+            <h6 class="mb-0"><i class="fas fa-search me-2"></i>Resultados da Busca</h6>
           </div>
-          <div class="card-body" id="recent-people-container">
-            <!-- Pessoas recentes serão carregadas aqui -->
+          <div class="card-body">
+            <div id="search-results">
+              <!-- Resultados da busca serão exibidos aqui -->
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div class="dashboard-loading" style="display: none;">
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Carregando...</span>
+        </div>
+        <p class="mt-2 text-muted">Carregando estatísticas...</p>
       </div>
     </div>
 
@@ -147,4 +239,29 @@
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Dashboard CSS -->
+<link rel="stylesheet" href="{% static 'core/css/dashboard.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<!-- Dashboard JavaScript -->
+<script src="{% static 'core/js/dashboard.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Mostrar esta seção quando acessada diretamente
+        const section = document.getElementById('dashboard');
+        if (section) {
+            section.style.display = 'block';
+        }
+        
+        // Carregar dashboard se existir a função
+        if (typeof loadDashboard === 'function') {
+            loadDashboard();
+        }
+    });
+</script>
 {% endblock %}

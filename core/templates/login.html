@@ -498,6 +498,20 @@ async function verifyToken() {
     }
 }
 
+// Função auxiliar para decodificar JWT e extrair informações
+function decodeJWT(token) {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        
+        const payload = JSON.parse(atob(parts[1]));
+        return payload;
+    } catch (error) {
+        console.error('Erro ao decodificar JWT:', error);
+        return null;
+    }
+}
+
 // Manipulador do formulário de login
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -528,15 +542,24 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const data = await response.json();
 
         if (response.ok) {
-            // Salva os tokens
+            // Decodifica o token para extrair expiração
+            const decodedToken = decodeJWT(data.access);
+            const expirationTime = decodedToken ? decodedToken.exp * 1000 : Date.now() + (60 * 60 * 1000);
+            const maxAgeSeconds = decodedToken ? decodedToken.exp - Math.floor(Date.now() / 1000) : 60 * 60;
+            
+            // Salva os tokens em localStorage
             localStorage.setItem('access_token', data.access);
+            localStorage.setItem('token_expiration', expirationTime);
             if (data.refresh) {
                 localStorage.setItem('refresh_token', data.refresh);
             }
             
             // Também salva em cookie para o servidor validar
-            // (este cookie será enviado automaticamente nas requisições)
-            document.cookie = `access_token=${data.access}; path=/; max-age=${60*60}; SameSite=Lax`;
+            // Usa o tempo de expiração do JWT para sincronizar
+            const cookieExpiration = Math.max(maxAgeSeconds, 60); // Mínimo de 60 segundos
+            document.cookie = `access_token=${data.access}; path=/; max-age=${cookieExpiration}; SameSite=Lax`;
+            
+            console.log(`✅ Token salvo com sucesso. Expiração em ${new Date(expirationTime).toLocaleTimeString()}`);
             
             // Redireciona para o dashboard
             showAlert('Login realizado com sucesso! Redirecionando...', 'success');

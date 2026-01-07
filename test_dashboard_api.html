@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Dashboard API</title>
+</head>
+<body>
+    <h1>Teste Dashboard API</h1>
+    <button onclick="testAPI()">Testar API Dashboard</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/dashboard/stats/', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + (localStorage.getItem('access_token') || 'no-token')
+                    }
+                });
+                
+                const resultDiv = document.getElementById('result');
+                
+                if (!response.ok) {
+                    resultDiv.innerHTML = `<p style="color: red;">Erro: ${response.status} - ${response.statusText}</p>`;
+                    const errorText = await response.text();
+                    resultDiv.innerHTML += `<pre>${errorText}</pre>`;
+                } else {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `<p style="color: green;">Sucesso!</p><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p style="color: red;">Erro: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

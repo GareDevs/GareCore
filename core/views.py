@@ -13,12 +13,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from .serializers import (
     RegistroSerializer, LoginSerializer, UsuarioSerializer,
-    PessoaSerializer, PessoaFisicaSerializer, PessoaJuridicaSerializer,
     EnderecoSerializer, ContatoEmpresaSerializer, SocioEmpresaSerializer,
     RelacionamentoSerializer, FotoSerializer
 )
 from .models import (
-    Usuario, Pessoa, PessoaFisica, PessoaJuridica, Endereco,
+    Usuario, Endereco,
     ContatoEmpresa, SocioEmpresa, Relacionamento, Foto
 )
 
@@ -164,29 +163,9 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
 
 # ========================
-# VIEWSETS PARA DADOS
+# VIEWSETS PARA OUTROS DADOS
+# Nota: ViewSets de Pessoa estão em core/api/views/pessoa.py
 # ========================
-
-class PessoaFisicaViewSet(viewsets.ModelViewSet):
-    """CRUD completo para Pessoa Física"""
-    queryset = PessoaFisica.objects.all()
-    serializer_class = PessoaFisicaSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        # Usuários só veem seus próprios registros (ou todos se admin)
-        if self.request.user.is_admin:
-            return PessoaFisica.objects.all()
-        return PessoaFisica.objects.all()  # Ajustar conforme lógica de permissão
-
-
-class PessoaJuridicaViewSet(viewsets.ModelViewSet):
-    """CRUD completo para Pessoa Jurídica"""
-    queryset = PessoaJuridica.objects.all()
-    serializer_class = PessoaJuridicaSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class EnderecoViewSet(viewsets.ModelViewSet):
@@ -227,3 +206,9 @@ class FotoViewSet(viewsets.ModelViewSet):
     serializer_class = FotoSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+
+# Debug view
+def debug_api(request):
+    """Página de debug para testar a API"""
+    return render(request, 'debug_api.html')
