@@ -175,10 +175,71 @@
                         </div>
                     </div>
 
-                    <!-- Controles essenciais -->
+                    <!-- Controles de layout e ferramentas -->
                     <div class="row mb-3">
-                        <!-- Espaçamento -->
+                        <!-- Layouts -->
                         <div class="col-md-6">
+                            <label class="form-label small"><i class="fas fa-sitemap me-1"></i>Layout da Árvore:</label>
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-sm btn-outline-primary active" data-layout="force" onclick="alterarLayoutArvore('force')">
+                                    <i class="fas fa-atom me-1"></i>Força
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-layout="hierarchical" onclick="alterarLayoutArvore('hierarchical')">
+                                    <i class="fas fa-sitemap me-1"></i>Árvore
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" data-layout="circular" onclick="alterarLayoutArvore('circular')">
+                                    <i class="fas fa-circle-notch me-1"></i>Circular
+                                </button>
+                            </div>
+                            <div class="btn-group w-100 mt-1" role="group">
+                                <button class="btn btn-sm btn-outline-success" data-layout="radial" onclick="alterarLayoutArvore('radial')">
+                                    <i class="fas fa-sun me-1"></i>Radial
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" data-layout="grid" onclick="alterarLayoutArvore('grid')">
+                                    <i class="fas fa-th me-1"></i>Grade
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" data-layout="cluster" onclick="alterarLayoutArvore('cluster')">
+                                    <i class="fas fa-layer-group me-1"></i>Grupos
+                                </button>
+                            </div>
+                            <div class="btn-group w-100 mt-1" role="group">
+                                <button class="btn btn-sm btn-outline-warning" data-layout="timeline" onclick="alterarLayoutArvore('timeline')">
+                                    <i class="fas fa-timeline me-1"></i>Timeline
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" data-layout="spiral" onclick="alterarLayoutArvore('spiral')">
+                                    <i class="fas fa-hurricane me-1"></i>Espiral
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" data-layout="free" onclick="alterarLayoutArvore('free')">
+                                    <i class="fas fa-hand-paper me-1"></i>Livre
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Zoom & Exportar -->
+                        <div class="col-md-3">
+                            <label class="form-label small"><i class="fas fa-search-plus me-1"></i>Zoom & Exportar:</label>
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-sm btn-outline-info" id="zoom-in"><i class="fas fa-plus"></i></button>
+                                <button class="btn btn-sm btn-outline-info" id="zoom-reset"><i class="fas fa-home"></i></button>
+                                <button class="btn btn-sm btn-outline-info" id="zoom-out"><i class="fas fa-minus"></i></button>
+                            </div>
+                            <button class="btn btn-sm btn-success w-100 mt-1" id="exportar-arvore">
+                                <i class="fas fa-download me-1"></i>Exportar
+                            </button>
+                        </div>
+
+                        <!-- Organização -->
+                        <div class="col-md-3">
+                            <label class="form-label small"><i class="fas fa-cogs me-1"></i>Organização:</label>
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-sm btn-outline-success" id="expandir-todos"><i class="fas fa-expand-arrows-alt"></i></button>
+                                <button class="btn btn-sm btn-outline-warning" id="recolher-todos"><i class="fas fa-compress-arrows-alt"></i></button>
+                                <button class="btn btn-sm btn-outline-secondary" id="reorganizar"><i class="fas fa-sync-alt"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Espaçamento -->
+                        <div class="col-md-3">
                             <label class="form-label small"><i class="fas fa-arrows-alt-h me-1"></i>Espaçamento:</label>
                             <div class="d-flex align-items-center">
                                 <button class="btn btn-sm btn-outline-info" id="diminuir-espaco"><i class="fas fa-compress-alt"></i></button>
@@ -188,6 +249,8 @@
                             <small class="text-muted d-block text-center mt-1"><span id="valor-espacamento">150</span>px</small>
                         </div>
                     </div>
+
+                    <!-- Botões de limpeza -->
                     <div class="d-flex justify-content-end">
                         <div class="btn-group btn-group-sm" role="group">
                             <button class="btn btn-outline-warning" onclick="limparConexoesAutomaticas()">
@@ -215,33 +278,134 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- ===== FASE 1: Novos módulos refatorados ===== -->
+<!-- ===== SISTEMA MODULAR REFATORADO ===== -->
 
-<!-- 1. API Cliente - consolidar todas as chamadas API -->
-<script src="{% static 'core/js/api-relacionamentos.js' %}"></script>
+<!-- 1. Sistema de Cache Inteligente -->
+<script src="{% static 'core/js/utils/data-cache.js' %}"></script>
 
-<!-- 2. Lógica de Negócio - gerenciar estado e operações -->
-<script src="{% static 'core/js/arvore-logica.js' %}"></script>
+<!-- 2. Módulos Especializados da Árvore -->
+<script src="{% static 'core/js/arvore/arvore-relacionamentos.js' %}"></script>
+<script src="{% static 'core/js/arvore/arvore-busca.js' %}"></script>
+<script src="{% static 'core/js/arvore/arvore-layouts.js' %}"></script>
+<script src="{% static 'core/js/arvore/arvore-interface.js' %}"></script>
 
-<!-- 3. Renderização D3 - apenas visualização -->
-<script src="{% static 'core/js/arvore-d3-render.js' %}"></script>
+<!-- 3. Núcleo Unificado -->
+<script src="{% static 'core/js/arvore/arvore-core.js' %}"></script>
 
-<!-- 4. Orquestradora Principal - integrar tudo -->
-<script src="{% static 'core/js/arvore-app.js' %}"></script>
-
-<!-- ===== Testes de Integração ===== -->
-<script src="{% static 'core/js/teste-integracao.js' %}"></script>
-
-<!-- ===== Módulos auxiliares ===== -->
-
-<!-- Manipulação visual de vínculos (mantém funcionalidade) -->
-<script src="{% static 'core/js/vinculos-avancados.js' %}"></script>
-
-<!-- Scripts antigos (mantidos por compatibilidade durante transição) -->
-<!-- <script src="{% static 'core/js/arvore.js' %}"></script> -->
-<!-- <script src="{% static 'core/js/arvore-interativa.js' %}"></script> -->
+<!-- 4. API Client para interações com backend -->
+<script src="{% static 'core/js/api-client.js' %}"></script>
 
 <script>
+    // ===== FUNÇÕES DE COMPATIBILIDADE =====
+    
+    // Busca inteligente na árvore
+    function buscarPessoaNaArvore() {
+        const campoBusca = document.getElementById('busca-arvore');
+        if (campoBusca && window.BuscaInteligente) {
+            window.BuscaInteligente.pesquisarEExibirPessoaNaArvore(campoBusca.value);
+        }
+    }
+    
+    // Busca por GOA específica
+    function buscarPorGOA() {
+        const campoGoa = document.getElementById('busca-goa');
+        if (campoGoa && window.BuscaInteligente) {
+            window.BuscaInteligente.pesquisarEExibirPessoaNaArvore(campoGoa.value);
+        }
+    }
+    
+    // Buscar e expandir automaticamente
+    function buscarEExpandirPorGOA() {
+        const campoGoa = document.getElementById('busca-goa');
+        if (campoGoa?.value && window.BuscaInteligente && window.RelacionamentoManager) {
+            // Primeiro buscar
+            window.BuscaInteligente.pesquisarEExibirPessoaNaArvore(campoGoa.value)
+                .then(pessoaEncontrada => {
+                    if (pessoaEncontrada) {
+                        // Depois expandir automaticamente
+                        return window.RelacionamentoManager.criarRelacionamentosAutomaticosFamilia(pessoaEncontrada.id);
+                    }
+                })
+                .then(() => {
+                    showNotification('🔍 Busca e expansão automática concluída!', 'success');
+                })
+                .catch(error => {
+                    console.error('Erro na busca e expansão:', error);
+                    showNotification('❌ Erro na busca automática', 'error');
+                });
+        }
+    }
+    
+    // Alterar layout da árvore
+    function alterarLayoutArvore(layout) {
+        if (window.ArvoreCore) {
+            window.ArvoreCore.alterarLayoutArvore(layout);
+        }
+    }
+    
+    // Análise completa de dados
+    async function analisarTodosOsDados() {
+        if (window.RelacionamentoManager) {
+            showNotification('🧠 Iniciando análise completa...', 'info');
+            try {
+                const stats = await window.RelacionamentoManager.criarRelacionamentosAutomaticosFamilia();
+                showNotification(`✅ Análise completa! ${stats.total} relacionamentos criados`, 'success');
+                // Re-renderizar árvore
+                if (window.ArvoreCore) {
+                    await window.ArvoreCore.renderizarArvoreInterativa();
+                }
+            } catch (error) {
+                console.error('Erro na análise:', error);
+                showNotification('❌ Erro na análise completa', 'error');
+            }
+        }
+    }
+    
+    // Tela cheia
+    function toggleTelaCheia() {
+        const container = document.getElementById('arvore-container');
+        if (container) {
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            }
+        }
+    }
+    
+    // Limpeza de conexões
+    function limparConexoesAutomaticas() {
+        if (window.RelacionamentoManager) {
+            window.RelacionamentoManager.limparRelacionamentosAutomaticos()
+                .then(() => {
+                    showNotification('🧹 Conexões automáticas removidas', 'success');
+                    if (window.ArvoreCore) {
+                        window.ArvoreCore.renderizarArvoreInterativa();
+                    }
+                });
+        }
+    }
+    
+    function limparTodasConexoes() {
+        if (confirm('⚠️ Deseja realmente limpar TODAS as conexões?')) {
+            if (window.RelacionamentoManager) {
+                window.RelacionamentoManager.limparTodosRelacionamentos()
+                    .then(() => {
+                        showNotification('🧹 Todas as conexões removidas', 'warning');
+                        if (window.ArvoreCore) {
+                            window.ArvoreCore.renderizarArvoreInterativa();
+                        }
+                    });
+            }
+        }
+    }
+    
+    // Re-renderização
+    function renderizarArvoreInterativa() {
+        if (window.ArvoreCore) {
+            window.ArvoreCore.renderizarArvoreInterativa();
+        }
+    }
+    
+    // ===== INICIALIZAÇÃO =====
     document.addEventListener('DOMContentLoaded', () => {
         // Mostrar esta seção quando acessada diretamente
         const section = document.getElementById('arvore');
@@ -249,8 +413,52 @@
             section.style.display = 'block';
         }
         
-        // Inicializar árvore usando novo sistema
-        loadArvoreRelacionamentos();
+        // Aguardar carregamento completo dos módulos
+        setTimeout(() => {
+            if (window.ArvoreCore) {
+                console.log('🌳 Inicializando sistema unificado...');
+                inicializarArvoreInterativa();
+            } else {
+                console.error('❌ ArvoreCore não foi carregado');
+                showNotification('❌ Erro no carregamento do sistema', 'error');
+            }
+        }, 500);
+        
+        // Configurar controles de espaçamento
+        const controleEspacamento = document.getElementById('controle-espacamento');
+        const valorEspacamento = document.getElementById('valor-espacamento');
+        
+        if (controleEspacamento && valorEspacamento) {
+            controleEspacamento.addEventListener('input', (e) => {
+                valorEspacamento.textContent = e.target.value;
+                // Aplicar espaçamento se o layout manager suportar
+                if (window.LayoutManager) {
+                    window.LayoutManager.configurarEspacamento(parseInt(e.target.value));
+                    if (window.ArvoreCore) {
+                        window.ArvoreCore.renderizarArvoreInterativa();
+                    }
+                }
+            });
+        }
+        
+        // Busca com Enter
+        const campoBusca = document.getElementById('busca-arvore');
+        if (campoBusca) {
+            campoBusca.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    buscarPessoaNaArvore();
+                }
+            });
+        }
+        
+        const campoGoa = document.getElementById('busca-goa');
+        if (campoGoa) {
+            campoGoa.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    buscarPorGOA();
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

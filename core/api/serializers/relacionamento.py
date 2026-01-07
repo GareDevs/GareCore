@@ -33,12 +33,14 @@ class RelacionamentoDetailSerializer(serializers.ModelSerializer):
 class RelacionamentoListSerializer(serializers.ModelSerializer):
     pessoa_origem_nome = serializers.SerializerMethodField()
     pessoa_destino_nome = serializers.SerializerMethodField()
+    pessoa_origem_id = serializers.IntegerField(source='pessoa_origem.id', read_only=True)
+    pessoa_destino_id = serializers.IntegerField(source='pessoa_destino.id', read_only=True)
     
     class Meta:
         model = Relacionamento
-        fields = ['id', 'pessoa_origem', 'pessoa_origem_nome',
-                  'pessoa_destino', 'pessoa_destino_nome',
-                  'tipo_relacionamento', 'confiabilidade', 'created_at']
+        fields = ['id', 'pessoa_origem', 'pessoa_origem_id', 'pessoa_origem_nome', 'tipo_origem',
+                  'pessoa_destino', 'pessoa_destino_id', 'pessoa_destino_nome', 'tipo_destino',
+                  'tipo_relacionamento', 'descricao', 'eh_auto', 'confiabilidade', 'created_at']
         read_only_fields = ['id', 'created_at']
     
     def get_pessoa_origem_nome(self, obj):
